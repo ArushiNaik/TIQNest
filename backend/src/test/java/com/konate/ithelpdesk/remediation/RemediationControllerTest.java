@@ -28,11 +28,6 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-/**
- * End-to-end tests of the TiqFix API against the real service, catalog and H2 database.
- * MockMvc is built standalone around the real controller plus the app's GlobalExceptionHandler;
- * the auth interceptor is covered by the rest of the app and not re-tested here.
- */
 @SpringBootTest
 @ActiveProfiles("test")
 class RemediationControllerTest {
@@ -65,8 +60,6 @@ class RemediationControllerTest {
         return mvc.perform(post("/api/remediations/attempts")
                 .contentType(MediaType.APPLICATION_JSON).content(json));
     }
-
-    // ---------------------------------------------------------------- recommendations
 
     @Test
     void vpnRecommendation() throws Exception {
@@ -132,7 +125,6 @@ class RemediationControllerTest {
 
     @Test
     void submittedCommandTextIsIgnored() throws Exception {
-        // Unknown "command" property must never surface as an action.
         recommend("{\"issueType\":\"DNS\",\"command\":\"format C: /q\"}")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.recommendations[0].command").value("ipconfig /flushdns"))
@@ -180,8 +172,6 @@ class RemediationControllerTest {
         recommend("{\"ticketId\":999999}").andExpect(status().isNotFound());
     }
 
-    // ---------------------------------------------------------------- catalog
-
     @Test
     void catalogListsAllApprovedRemedies() throws Exception {
         mvc.perform(get("/api/remediations/catalog"))
@@ -191,8 +181,6 @@ class RemediationControllerTest {
                         "vpn-settings", "printer-check", "dns-flush", "browser-cache", "escalate-to-it")))
                 .andExpect(jsonPath("$[0].matchReason").doesNotExist());
     }
-
-    // ---------------------------------------------------------------- attempts
 
     @Test
     void unsupportedRemedyIdIsRejected() throws Exception {

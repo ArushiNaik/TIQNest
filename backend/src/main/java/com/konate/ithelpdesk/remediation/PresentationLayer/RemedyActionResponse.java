@@ -8,7 +8,6 @@ public record RemedyActionResponse(
         String id,
         RemedyActionType type,
         String label,
-        /** ms-settings deep link or command text, copied verbatim from the approved catalog. */
         String value,
         String shell,
         String explanation,

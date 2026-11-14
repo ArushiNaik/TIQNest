@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-/** Hand-written because remedies are catalog records (not entities) and attempt titles come from the catalog. */
 @Component
 public class RemediationMapper {
 

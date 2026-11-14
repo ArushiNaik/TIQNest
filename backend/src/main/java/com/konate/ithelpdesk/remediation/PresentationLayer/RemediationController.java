@@ -9,7 +9,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
-/** TiqFix API. Protected by the existing AuthInterceptor like every other /api/** route. */
 @RestController
 @RequestMapping("/api/remediations")
 @CrossOrigin(origins = "http://localhost:5173")

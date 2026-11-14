@@ -11,7 +11,6 @@ interface CopyButtonProps {
     onCopied?: () => void;
 }
 
-/** Copies an approved value and announces the result to screen readers. */
 export default function CopyButton({ text, label, variant = 'outline-primary', size, disabled, onCopied }: CopyButtonProps) {
     const [state, setState] = useState<'idle' | 'copied' | 'failed'>('idle');
 

@@ -13,17 +13,12 @@ const CATEGORIES: TicketCategory[] = ['NETWORK', 'EMAIL', 'VPN', 'PRINTER', 'SOF
 interface EscalationModalProps {
     show: boolean;
     onHide: () => void;
-    /** When TiqFix was opened from an existing ticket, IT already has it. */
     ticket: TiqFixTicket | null;
     issueType: IssueType;
     description: string;
     remedy: Remedy | null;
 }
 
-/**
- * Escalate to IT. With a ticket: explains it is already in the IT queue.
- * Without one: creates a real ticket through the existing POST /api/tickets endpoint.
- */
 export default function EscalationModal({ show, onHide, ticket, issueType, description, remedy }: EscalationModalProps) {
     const user = getCurrentUser();
     const navigate = useNavigate();
@@ -55,7 +50,7 @@ export default function EscalationModal({ show, onHide, ticket, issueType, descr
         setError(null);
         setFieldErrors({});
         setCreated(null);
-    }, [show]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [show]);
 
     const handleSubmit = async (e: FormEvent) => {
         e.preventDefault();

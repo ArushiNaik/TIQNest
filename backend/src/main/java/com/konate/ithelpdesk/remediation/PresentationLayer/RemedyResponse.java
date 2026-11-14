@@ -7,7 +7,6 @@ import com.konate.ithelpdesk.remediation.BusinessLayer.SafetyLevel;
 
 import java.util.List;
 
-/** An approved remedy. {@code matchReason} and {@code confidence} are only set in recommendations. */
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public record RemedyResponse(
         String remedyId,

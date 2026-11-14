@@ -6,7 +6,6 @@ export interface IssueOption {
     label: string;
     icon: string;
     hint: string;
-    /** Used to pre-fill an escalation ticket. */
     category: TicketCategory;
     system: string;
 }
@@ -70,7 +69,6 @@ export function confidenceLabel(confidence?: number): string | null {
     return 'Possible match';
 }
 
-/** Defence in depth: only ever navigate to Windows Settings pages, even if the server sent something else. */
 const SETTINGS_URI = /^ms-settings:[a-z0-9-]+$/;
 
 export function isAllowedSettingsUri(uri: string | undefined): uri is string {
@@ -81,7 +79,6 @@ export function isWindows(): boolean {
     return /Windows/i.test(navigator.userAgent);
 }
 
-/** Copies text to the clipboard. Returns false if the browser refused. */
 export async function copyToClipboard(text: string): Promise<boolean> {
     try {
         if (navigator.clipboard && window.isSecureContext) {
@@ -89,7 +86,6 @@ export async function copyToClipboard(text: string): Promise<boolean> {
             return true;
         }
     } catch {
-        // fall through to the legacy approach
     }
     try {
         const area = document.createElement('textarea');

@@ -7,7 +7,6 @@ import { OUTCOME } from './tiqfix-ui';
 
 interface RemediationHistoryProps {
     ticketId?: number;
-    /** Change this value to reload the list. */
     refreshKey: number;
 }
 

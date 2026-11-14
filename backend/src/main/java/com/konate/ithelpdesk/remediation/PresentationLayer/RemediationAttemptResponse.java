@@ -9,7 +9,6 @@ public record RemediationAttemptResponse(
         String remedyId,
         String remedyTitle,
         Long ticketId,
-        /** User-reported outcome, not a verified repair. */
         RemediationOutcome outcome,
         String feedback,
         String reportedBy,

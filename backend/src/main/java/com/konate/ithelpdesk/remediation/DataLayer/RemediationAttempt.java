@@ -5,10 +5,6 @@ import lombok.*;
 
 import java.time.Instant;
 
-/**
- * One self-service attempt reported by a user. The ticket link is a plain nullable column
- * (no foreign key / relation) so the Ticket entity stays untouched and manual demos need no ticket.
- */
 @Entity
 @Table(name = "remediation_attempts", indexes = {
         @Index(name = "idx_remediation_ticket", columnList = "ticket_id, created_at")

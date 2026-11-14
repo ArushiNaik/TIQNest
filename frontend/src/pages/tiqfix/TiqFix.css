@@ -1,4 +1,3 @@
-/* TiqFix styles. Everything is scoped under .tiqfix / tiqfix-* so other pages are unaffected. */
 
 .tiqfix-hero {
     background: linear-gradient(135deg, var(--bs-primary) 0%, #4f46e5 60%, #7c3aed 100%);
@@ -26,7 +25,6 @@
     font-size: 0.9rem;
 }
 
-/* Problem selector */
 .tiqfix-issues {
     display: grid;
     gap: 10px;
@@ -68,7 +66,6 @@
     text-align: center;
 }
 
-/* Result area */
 .tiqfix-result:focus {
     outline: none;
 }
@@ -193,7 +190,6 @@
     animation: tiqfix-pop 0.35s ease-out;
 }
 
-/* Small "Try TiqFix" button on ticket cards */
 .tiqfix-try-btn {
     white-space: nowrap;
 }

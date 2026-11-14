@@ -7,11 +7,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-/**
- * A reviewed, allowlisted remedy. Instances only exist inside {@link RemediationCatalog}.
- *
- * @param keywords lower-case phrase -> weight, used by {@link RemediationMatcher}
- */
 public record Remedy(
         String id,
         IssueType issueType,

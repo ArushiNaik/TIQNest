@@ -1,4 +1,3 @@
-// TiqFix API calls. Reuses the shared request helpers (auth header, error handling) and VITE_API_BASE_URL.
 import { getData, postData } from './api-services';
 import { API_BASE_URL, API_URL_TICKETS } from './config';
 import type { CreateTicketRequest, Ticket } from '../types/models';
@@ -38,7 +37,6 @@ export async function getTicketForTiqFix(ticketId: number): Promise<TiqFixTicket
     return ticket;
 }
 
-/** Escalation from standalone mode: create a normal ticket through the existing tickets API. */
 export function createEscalationTicket(request: CreateTicketRequest): Promise<Ticket> {
     return postData<Ticket>(API_URL_TICKETS, request);
 }

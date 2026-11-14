@@ -50,7 +50,7 @@ export default function TiqFixPage() {
         setActiveIndex(0);
         try {
             const response = await getRecommendations(request);
-            if (seq !== requestSeq.current) return; // a newer request replaced this one
+            if (seq !== requestSeq.current) return;
             setResult(response);
             setTimeout(() => resultRef.current?.focus({ preventScroll: false }), 50);
         } catch (err) {
@@ -62,7 +62,6 @@ export default function TiqFixPage() {
         }
     }, []);
 
-    // Ticket mode: /fix?ticketId=123 -> load the ticket, then ask for matching remedies.
     useEffect(() => {
         setTicket(null);
         setTicketError(null);
@@ -109,7 +108,6 @@ export default function TiqFixPage() {
 
     return (
         <Container className="py-4 tiqfix">
-            {/* ---------------------------------------------------------------- hero */}
             <header className="tiqfix-hero mb-4">
                 <div className="d-flex align-items-center gap-3">
                     <div className="tiqfix-hero-icon" aria-hidden="true">🛠️</div>
@@ -126,7 +124,6 @@ export default function TiqFixPage() {
             </header>
 
             <Row className="g-4">
-                {/* ------------------------------------------------------------ left column */}
                 <Col lg={5} xl={4} className="d-flex flex-column gap-4">
                     {ticketParam === 'invalid' && (
                         <Alert variant="warning">
@@ -216,7 +213,6 @@ export default function TiqFixPage() {
                     <RemediationHistory ticketId={ticketId} refreshKey={historyKey} />
                 </Col>
 
-                {/* ------------------------------------------------------------ right column */}
                 <Col lg={7} xl={8}>
                     <div ref={resultRef} tabIndex={-1} className="tiqfix-result" aria-live="polite" aria-busy={loading}>
                         {loading && (

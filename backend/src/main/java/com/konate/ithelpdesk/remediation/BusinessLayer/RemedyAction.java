@@ -1,9 +1,5 @@
 package com.konate.ithelpdesk.remediation.BusinessLayer;
 
-/**
- * A single reviewed action inside a remedy. {@code value} is a fixed ms-settings URI or a fixed command
- * string defined in {@link RemediationCatalog}; it never comes from user input.
- */
 public record RemedyAction(
         String id,
         RemedyActionType type,

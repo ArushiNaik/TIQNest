@@ -16,7 +16,6 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/** Pure unit tests of the deterministic matcher and the allowlisted catalog (no Spring context). */
 class RemediationMatcherTest {
 
     private final RemediationCatalog catalog = new RemediationCatalog();

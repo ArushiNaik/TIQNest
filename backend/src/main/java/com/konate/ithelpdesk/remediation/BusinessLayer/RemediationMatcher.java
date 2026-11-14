@@ -11,20 +11,14 @@ import java.util.Map;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-/**
- * Deterministic, explainable matching of a problem description against the approved catalog.
- * No AI and no free-form generation: the output is always a subset of {@link RemediationCatalog}.
- */
 @Component
 public class RemediationMatcher {
 
-    /** Minimum score for a remedy to be recommended. */
     static final int MIN_SCORE = 10;
     private static final int ISSUE_TYPE_SCORE = 100;
     private static final int CATEGORY_SCORE = 40;
     private static final int MAX_RESULTS = 3;
 
-    /** Problems that must always go to a human, whatever else the text mentions. */
     private static final List<String> HIGH_RISK_TERMS = List.of(
             "virus", "malware", "ransomware", "phishing", "hacked", "compromised", "breach",
             "antivirus", "firewall", "defender", "bitlocker", "stolen", "data loss",
@@ -40,7 +34,6 @@ public class RemediationMatcher {
 
     public record RemedyMatch(Remedy remedy, int score, String reason) {}
 
-    /** Returns the matching remedies, best first. Falls back to the escalation remedy, never to a new action. */
     public List<RemedyMatch> match(MatchInput input) {
         String text = normalize(input.text());
 
@@ -102,7 +95,6 @@ public class RemediationMatcher {
         return s.trim();
     }
 
-    /** Term must start at a word boundary; suffixes are allowed ("print" matches "printing"). */
     static boolean containsTerm(String text, String term) {
         return Pattern.compile("(?<![a-z0-9])" + Pattern.quote(term)).matcher(text).find();
     }

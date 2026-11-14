@@ -7,7 +7,6 @@ import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 
-/** The user's own report of how a remedy went. */
 public record RemediationAttemptRequest(
         @NotBlank @Size(max = 64) @Pattern(regexp = "^[a-z0-9-]+$", message = "must be an approved remedy ID")
         String remedyId,

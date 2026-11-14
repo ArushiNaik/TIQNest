@@ -6,13 +6,11 @@ import { ACTION_TYPE_LABEL, isAllowedSettingsUri, isWindows } from './tiqfix-ui'
 
 interface RemediationDetailsProps {
     actions: RemedyAction[];
-    /** Called whenever the user actually performs an action (opens settings, copies, views steps). */
     onActionTaken: (action: RemedyAction) => void;
     onViewInstructions: () => void;
     onEscalate: () => void;
 }
 
-/** Renders the approved actions of a remedy. Every button here does exactly what its label says. */
 export default function RemediationDetails({ actions, onActionTaken, onViewInstructions, onEscalate }: RemediationDetailsProps) {
     return (
         <div className="d-flex flex-column gap-3">
@@ -70,7 +68,7 @@ function ActionBlock({ action, children }: { action: RemedyAction; children: Rea
 function SettingsAction({ action, primary, onActionTaken }: { action: RemedyAction; primary: boolean; onActionTaken: (a: RemedyAction) => void }) {
     const [opened, setOpened] = useState(false);
     const uri = action.value;
-    if (!isAllowedSettingsUri(uri)) return null; // never render a link that is not a Windows Settings page
+    if (!isAllowedSettingsUri(uri)) return null;
 
     return (
         <ActionBlock action={action}>

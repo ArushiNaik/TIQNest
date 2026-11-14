@@ -10,14 +10,6 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-/**
- * The strict allowlist of reviewed TiqFix remedies.
- * <p>
- * Every deep link and command that TiqFix can ever show lives in this class. Nothing here is executed
- * by the server: deep links are opened by the user's browser, and commands are copied and run by the
- * user themselves after reading what they do. API input can only select a remedy by ID; it can never
- * add or change a command.
- */
 @Component
 public class RemediationCatalog {
 
@@ -27,7 +19,6 @@ public class RemediationCatalog {
     public static final String BROWSER_CACHE = "browser-cache";
     public static final String ESCALATE = "escalate-to-it";
 
-    /** Only these Windows Settings pages may be offered. */
     private static final Pattern MS_SETTINGS_URI = Pattern.compile("^ms-settings:[a-z0-9-]+$");
 
     private final Map<String, Remedy> remedies;
@@ -58,8 +49,6 @@ public class RemediationCatalog {
     public Remedy escalation() {
         return remedies.get(ESCALATE);
     }
-
-    // ------------------------------------------------------------------ remedies
 
     private static Remedy vpn() {
         return new Remedy(

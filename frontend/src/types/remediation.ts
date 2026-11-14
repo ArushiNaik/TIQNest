@@ -1,4 +1,3 @@
-// TiqFix types. These mirror the backend records in com.konate.ithelpdesk.remediation.PresentationLayer.
 import type { TicketCategory } from './models';
 
 export type IssueType = 'VPN' | 'PRINTER' | 'DNS' | 'BROWSER_CACHE' | 'OTHER';
@@ -18,7 +17,6 @@ export interface RemedyAction {
     id: string;
     type: RemedyActionType;
     label: string;
-    /** ms-settings deep link or command text from the approved server-side catalog. */
     value?: string;
     shell?: string;
     explanation: string;
@@ -79,10 +77,6 @@ export interface RemediationAttempt {
     createdAt: string;
 }
 
-/**
- * The ticket details TiqFix needs. Built through toTiqFixTicket() so TiqFix does not depend on
- * which ticket shape a given branch of the frontend uses.
- */
 export interface TiqFixTicket {
     id: number;
     title: string;
@@ -100,11 +94,6 @@ function str(value: unknown): string {
     return typeof value === 'string' ? value : '';
 }
 
-/**
- * Integration boundary between ticket JSON and TiqFix.
- * Accepts the backend TicketResponse ({ id, category, affectedSystem, ... }) as well as the older
- * frontend shape ({ ticketId, location, priority, ... }) and returns null if there is no usable ID.
- */
 export function toTiqFixTicket(raw: unknown): TiqFixTicket | null {
     if (!raw || typeof raw !== 'object') return null;
     const t = raw as Record<string, unknown>;

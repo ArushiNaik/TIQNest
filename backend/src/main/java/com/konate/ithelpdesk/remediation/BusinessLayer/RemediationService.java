@@ -54,7 +54,6 @@ public class RemediationService {
                     "Provide a ticketId, an issue type, a category, or a description of the problem");
         }
 
-        // Reuse the ticket module's public service: 404 if the ticket does not exist.
         TicketResponse ticket = req.ticketId() == null ? null : ticketService.findById(req.ticketId());
 
         String text = ticket != null
@@ -87,7 +86,7 @@ public class RemediationService {
                     "Unknown remedy '" + req.remedyId() + "'. Only approved TiqFix remedies can be recorded.");
         }
         if (req.ticketId() != null) {
-            ticketService.findById(req.ticketId()); // 404 if the ticket does not exist
+            ticketService.findById(req.ticketId());
         }
 
         RemediationAttempt saved = attemptRepository.save(RemediationAttempt.builder()
@@ -121,7 +120,6 @@ public class RemediationService {
         return Stream.of(parts).filter(Objects::nonNull).collect(Collectors.joining(" "));
     }
 
-    /** Strip control characters (keeping newlines/tabs); blank becomes null. */
     private static String clean(String feedback) {
         if (feedback == null) return null;
         String s = feedback.replaceAll("[\\p{Cntrl}&&[^\\n\\t]]", "").trim();
