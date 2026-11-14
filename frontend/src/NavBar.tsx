@@ -11,6 +11,7 @@ interface NavLinkItem {
 
 const links: NavLinkItem[] = [
     { to: 'tickets', title: 'Tickets', adminOnly: false },
+    { to: 'users', title: 'Users', adminOnly: true },
 ];
 
 export default function HelpDeskNavBar() {
