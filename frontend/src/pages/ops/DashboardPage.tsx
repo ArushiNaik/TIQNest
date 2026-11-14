@@ -11,6 +11,7 @@ import {
 } from '../../services/ops-service';
 import type { Incident, SlaSummary, Ticket } from '../../types/models';
 import { formatLabel } from '../TicketCard';
+import DemoOutageButton from './DemoOutageButton';
 import SlaBadge from './SlaBadge';
 import TicketDetailsModal from './TicketDetailsModal';
 import './ops.css';
@@ -106,6 +107,7 @@ export default function DashboardPage() {
             <div className="d-flex justify-content-between align-items-center mb-3">
                 <h2 className="mb-0">Dashboard</h2>
                 <div className="d-flex align-items-center gap-2">
+                    <DemoOutageButton />
                     {updatedAt && <small className="text-muted">Updated {updatedAt.toLocaleTimeString()}</small>}
                     <Button size="sm" variant="outline-primary" onClick={load}>Refresh</Button>
                 </div>
