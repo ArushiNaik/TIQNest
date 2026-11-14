@@ -13,12 +13,13 @@
 }
 
 .reporter-info {
-    padding: 9px 18px;
-    background: linear-gradient(90deg, rgba(124, 92, 255, 0.14), transparent);
-    font-weight: 500;
-    font-size: 0.85rem;
-    color: #c4b5fd;
-    border-bottom: 1px solid var(--border-color);
+    padding: 10px 20px;
+    border-bottom: 1px dashed var(--border-color);
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pink);
 }
 
 .ticket-card {
@@ -28,4 +29,10 @@
     box-shadow: none !important;
     backdrop-filter: none !important;
     animation: none !important;
+}
+
+.ticket-card .card-title {
+    font-family: var(--font-heading);
+    font-size: 1.9rem;
+    letter-spacing: 0.02em;
 }
