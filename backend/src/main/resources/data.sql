@@ -4,5 +4,3 @@ VALUES ('user_demo-admin', 'Christine Gerald', 'Christine@demo.com',
        ('user_demo-employee-1', 'Bahman', 'Bahman@demo.com',
         'pwd', 'EMPLOYEE'),
        ('user_demo-employee-2', 'Amin', 'Amin@demo.com', 'pwd', 'EMPLOYEE') ON CONFLICT DO NOTHING;
-
-

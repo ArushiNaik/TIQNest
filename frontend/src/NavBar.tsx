@@ -13,6 +13,7 @@ interface NavLinkItem {
 
 const links: NavLinkItem[] = [
     { to: 'tickets', title: 'Tickets', adminOnly: false },
+    { to: 'fix', title: 'TiqFix', adminOnly: false },
     { to: 'users', title: 'Users', adminOnly: true },
 ];
 
