@@ -1,4 +1,5 @@
 import { Badge, Card } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
 import type { Ticket, TicketStatus } from '../types/models';
 
 const statusVariant: Record<TicketStatus, string> = {
@@ -32,10 +33,21 @@ export default function TicketCard({ ticket }: { ticket: Ticket }) {
                 </div>
                 {ticket.description && <Card.Text>{ticket.description}</Card.Text>}
                 <Card.Text className="text-muted mb-1">💻 {ticket.affectedSystem}</Card.Text>
-                <Card.Text className="text-muted small mb-0">
-                    Ticket #{ticket.id} · Reported {formatDate(ticket.createdAt)}
-                    {ticket.incidentId != null && <> · Part of incident #{ticket.incidentId}</>}
-                </Card.Text>
+                <div className="d-flex justify-content-between align-items-end gap-2">
+                    <Card.Text className="text-muted small mb-0">
+                        Ticket #{ticket.id} · Reported {formatDate(ticket.createdAt)}
+                        {ticket.incidentId != null && <> · Part of incident #{ticket.incidentId}</>}
+                    </Card.Text>
+                    {ticket.status !== 'RESOLVED' && ticket.status !== 'CLOSED' && (
+                        <Link
+                            to={`/fix?ticketId=${ticket.id}`}
+                            className="btn btn-sm btn-outline-primary text-nowrap"
+                            aria-label={`Try TiqFix for ticket ${ticket.id}`}
+                        >
+                            🛠️ Try TiqFix
+                        </Link>
+                    )}
+                </div>
             </Card.Body>
         </Card>
     );

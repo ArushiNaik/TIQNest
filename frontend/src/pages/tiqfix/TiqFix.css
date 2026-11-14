@@ -1,0 +1,209 @@
+/* TiqFix styles. Everything is scoped under .tiqfix / tiqfix-* so other pages are unaffected. */
+
+.tiqfix-hero {
+    background: linear-gradient(135deg, var(--bs-primary) 0%, #4f46e5 60%, #7c3aed 100%);
+    color: #fff;
+    border-radius: 16px;
+    padding: 28px 32px;
+    box-shadow: 0 10px 30px rgba(13, 110, 253, 0.25);
+}
+
+.tiqfix-hero-icon {
+    font-size: 2.5rem;
+    width: 64px;
+    height: 64px;
+    display: grid;
+    place-items: center;
+    background: rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+}
+
+.tiqfix-promises li {
+    background: rgba(255, 255, 255, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    padding: 4px 14px;
+    font-size: 0.9rem;
+}
+
+/* Problem selector */
+.tiqfix-issues {
+    display: grid;
+    gap: 10px;
+}
+
+.tiqfix-issue {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    text-align: left;
+    background: #fff;
+    border: 1px solid var(--bs-border-color);
+    border-radius: 12px;
+    padding: 10px 14px;
+    transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+}
+
+.tiqfix-issue:hover {
+    border-color: var(--bs-primary);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.12);
+}
+
+.tiqfix-issue:focus-visible {
+    outline: 3px solid rgba(13, 110, 253, 0.5);
+    outline-offset: 2px;
+}
+
+.tiqfix-issue.active {
+    border-color: var(--bs-primary);
+    background: #eef4ff;
+    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+}
+
+.tiqfix-issue-icon {
+    font-size: 1.6rem;
+    width: 40px;
+    text-align: center;
+}
+
+/* Result area */
+.tiqfix-result:focus {
+    outline: none;
+}
+
+.tiqfix-empty {
+    border: 2px dashed var(--bs-border-color);
+    background: transparent;
+    box-shadow: none !important;
+}
+
+.tiqfix-verdict {
+    font-weight: 600;
+    font-size: 1.1rem;
+    padding: 12px 18px;
+    border-radius: 12px;
+    animation: tiqfix-pop 0.35s ease-out;
+}
+
+.tiqfix-verdict.ok {
+    background: #e8f5ee;
+    color: #146c43;
+}
+
+.tiqfix-verdict.escalate {
+    background: #fdecec;
+    color: #b02a37;
+}
+
+.tiqfix-remedy {
+    border: none;
+    border-left: 6px solid var(--bs-primary);
+    border-radius: 14px;
+    animation: tiqfix-pop 0.35s ease-out;
+}
+
+.tiqfix-safety-safe { border-left-color: var(--bs-success); }
+.tiqfix-safety-low_risk { border-left-color: var(--bs-warning); }
+.tiqfix-safety-it_only { border-left-color: var(--bs-secondary); }
+
+.tiqfix-remedy-icon {
+    font-size: 2.2rem;
+    width: 60px;
+    height: 60px;
+    display: grid;
+    place-items: center;
+    background: #eef4ff;
+    border-radius: 14px;
+    flex-shrink: 0;
+}
+
+.tiqfix-eyebrow {
+    letter-spacing: 0.06em;
+}
+
+.tiqfix-why {
+    background: #f6f8fb;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-size: 0.95rem;
+}
+
+.tiqfix-action {
+    border: 1px solid var(--bs-border-color);
+    border-radius: 12px;
+    padding: 14px 16px;
+    background: #fff;
+}
+
+.tiqfix-command {
+    background: #1e1e2e;
+    color: #e6e6f0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: SFMono-Regular, Consolas, 'Liberation Mono', monospace;
+}
+
+.tiqfix-command code {
+    color: #a6e3a1;
+    font-size: 1.05rem;
+    user-select: all;
+}
+
+.tiqfix-command-shell {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: #9aa0b4;
+    margin-bottom: 2px;
+}
+
+.tiqfix-steps:focus {
+    outline: none;
+}
+
+.tiqfix-steps ol {
+    padding-left: 1.25rem;
+}
+
+.tiqfix-steps li {
+    margin-bottom: 6px;
+}
+
+.tiqfix-info {
+    background: #f8f9fa;
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.tiqfix-detected {
+    background: #eef4ff;
+    border-radius: 10px;
+    padding: 8px 12px;
+}
+
+.tiqfix-feedback {
+    border: none;
+    border-radius: 14px;
+    animation: tiqfix-pop 0.35s ease-out;
+}
+
+.tiqfix-feedback-done {
+    animation: tiqfix-pop 0.35s ease-out;
+}
+
+/* Small "Try TiqFix" button on ticket cards */
+.tiqfix-try-btn {
+    white-space: nowrap;
+}
+
+@keyframes tiqfix-pop {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .tiqfix-verdict, .tiqfix-remedy, .tiqfix-feedback, .tiqfix-feedback-done { animation: none; }
+    .tiqfix-issue { transition: none; }
+}
