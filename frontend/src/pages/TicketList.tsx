@@ -5,9 +5,10 @@ import './TicketList.css';
 interface TicketListProps {
     tickets: Ticket[];
     users: User[];
+    onOpen?: (id: number) => void;
 }
 
-export default function TicketList({ tickets, users }: TicketListProps) {
+export default function TicketList({ tickets, users, onOpen }: TicketListProps) {
     if (tickets.length === 0) {
         return <p className="text-center text-muted mt-4">No tickets yet. Report a problem to get started.</p>;
     }
@@ -23,7 +24,7 @@ export default function TicketList({ tickets, users }: TicketListProps) {
                         <div className="reporter-info">
                             Reported by {requester ? requester.name : ticket.requesterEmail}
                         </div>
-                        <TicketCard ticket={ticket} />
+                        <TicketCard ticket={ticket} onOpen={onOpen} />
                     </div>
                 );
             })}

@@ -3,7 +3,9 @@ import { Alert, Button, Container } from 'react-bootstrap';
 import { ApiRequestError, getData, postData } from '../services/api-services';
 import { getCurrentUser, isAdmin } from '../services/auth';
 import { API_URL_TICKETS, API_URL_USERS } from '../services/config';
+import { OPS_REFRESH_EVENT, notifyOpsChanged } from '../services/ops-service';
 import type { CreateTicketRequest, Ticket, User } from '../types/models';
+import TicketDetailsModal from './ops/TicketDetailsModal';
 import TicketForm from './TicketForm';
 import TicketList from './TicketList';
 
@@ -17,6 +19,7 @@ export default function TicketPage() {
     const [loadError, setLoadError] = useState<string | null>(null);
     const [saveError, setSaveError] = useState<string | null>(null);
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
+    const [openTicketId, setOpenTicketId] = useState<number | null>(null);
 
     const currentUser = getCurrentUser();
     const admin = isAdmin();
@@ -46,6 +49,13 @@ export default function TicketPage() {
     useEffect(() => {
         fetchTickets();
         if (admin) fetchUsers();
+        const refresh = () => fetchTickets();
+        window.addEventListener(OPS_REFRESH_EVENT, refresh);
+        const timer = setInterval(refresh, 15000);
+        return () => {
+            window.removeEventListener(OPS_REFRESH_EVENT, refresh);
+            clearInterval(timer);
+        };
     }, []);
 
     const handleReportNew = () => {
@@ -58,6 +68,7 @@ export default function TicketPage() {
         try {
             await postData<Ticket>(API_URL_TICKETS, data);
             await fetchTickets();
+            notifyOpsChanged();
             setMode('list');
         } catch (err) {
             console.error('Error saving ticket:', err);
@@ -84,7 +95,7 @@ export default function TicketPage() {
                             <Alert.Link onClick={fetchTickets}>Try again</Alert.Link>
                         </Alert>
                     )}
-                    <TicketList tickets={tickets} users={users} />
+                    <TicketList tickets={tickets} users={users} onOpen={setOpenTicketId} />
                 </>
             )}
 
@@ -97,6 +108,12 @@ export default function TicketPage() {
                     onCancel={() => setMode('list')}
                 />
             )}
+
+            <TicketDetailsModal
+                ticketId={openTicketId}
+                onClose={() => setOpenTicketId(null)}
+                onUpdated={() => fetchTickets()}
+            />
         </Container>
     );
 }
