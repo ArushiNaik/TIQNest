@@ -9,7 +9,10 @@ export default function HomePage() {
     useEffect(() => {
         if (!currentUser) {
             navigate('/login');
+            return;
         }
+        const timer = setTimeout(() => navigate('/tickets'), 2000);
+        return () => clearTimeout(timer);
     }, [currentUser, navigate]);
 
     return (
@@ -17,6 +20,7 @@ export default function HomePage() {
             {currentUser ? (
                 <div>
                     <h1>Welcome back, {currentUser.name}!</h1>
+                    <p>Taking you to your tickets in 2 seconds...</p>
                 </div>
             ) : (
                 <p>Loading...</p>

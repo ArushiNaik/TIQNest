@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import HelpDeskNavBar from './NavBar';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
+import TicketPage from './pages/TicketPage';
 import { getCurrentUser } from './services/auth';
 
 function RequireLogin({ children }: { children: ReactElement }) {
@@ -21,6 +22,7 @@ function AppContent() {
                 <Route path="/" element={<Navigate to="/home" />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/home" element={<RequireLogin><HomePage /></RequireLogin>} />
+                <Route path="/tickets" element={<RequireLogin><TicketPage /></RequireLogin>} />
             </Routes>
         </div>
     );
