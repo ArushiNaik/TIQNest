@@ -1,1 +1,4 @@
 rootProject.name = 'ITHelpDesk'
+
+// The Spring Boot app lives in backend/. The frontend (npm) is not part of Gradle.
+include 'backend'

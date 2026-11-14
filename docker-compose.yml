@@ -1,0 +1,27 @@
+# Local development services for the IT Platform.
+# Start the database with:  docker compose up -d db
+# Values come from the .env file next to this file (copy .env.example to .env).
+# ${NAME:-default} means "use NAME from .env, or the default if it is not set".
+
+services:
+  db:
+    image: postgres:16
+    container_name: itplatform-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-itplatform}
+      POSTGRES_USER: ${POSTGRES_USER:-itplatform}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-itplatform}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    healthcheck:
+      # $$ escapes the $ so the variable is read inside the container, not by Compose.
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  db-data:

@@ -32,13 +32,17 @@ Built during a one-day hackathon. Demo data is fake.
 
 ```
 .
-├── backend/              Spring Boot API
-├── frontend/             React app
-├── docker-compose.yml    PostgreSQL (optional)
+├── backend/              Spring Boot API (Java 21)
+├── settings.gradle       Gradle root; includes backend/
+├── gradlew               Gradle wrapper (run from the repo root)
+├── frontend/             React app (Vite + TypeScript)
+├── docker-compose.yml    PostgreSQL 16
+├── .env.example          copy to .env for local DB settings
 └── README.md
 ```
 
-Backend modules (inside one app, grouped by feature):
+Backend modules (inside one app, grouped by feature, in
+`backend/src/main/java/com/konate/ithelpdesk/`):
 
 ```
 ticket/      create, list, update tickets
@@ -46,6 +50,7 @@ incident/    groups tickets into incidents
 sla/         deadlines and timers
 audit/       change history
 user/        users and roles
+config/      Spring configuration (CORS, security, seed data)
 ```
 
 ## Getting started
@@ -65,47 +70,39 @@ cd <repository-folder>
 
 ### 2. Start the database
 
-Option A: Docker (recommended). Create `docker-compose.yml` in the project root:
-
-```yaml
-services:
-  db:
-    image: postgres:16
-    environment:
-      POSTGRES_DB: itplatform
-      POSTGRES_USER: itplatform
-      POSTGRES_PASSWORD: itplatform
-    ports:
-      - "5432:5432"
-```
-
-Then run:
+Option A: Docker (recommended). The repo has a `docker-compose.yml` with a PostgreSQL 16 service.
 
 ```bash
-docker compose up -d db
+cp .env.example .env        # optional: change values in .env
+docker compose up -d db     # start Postgres in the background
+docker compose ps           # wait until STATUS shows "(healthy)"
 ```
+
+Connect with `docker exec -it itplatform-db psql -U itplatform -d itplatform`.
+Stop it with `docker compose down` (data is kept in the `db-data` volume; `docker compose down -v` wipes it).
 
 Option B: use a local PostgreSQL install and create a database named `itplatform`.
 
 ### 3. Run the backend
 
-Configure the database in `backend/src/main/resources/application.properties`:
+The database settings are already in `backend/src/main/resources/application.yaml`
+(they match `.env.example`). If Docker is running, the app starts the `db` container for you.
 
-```properties
-spring.datasource.url=jdbc:postgresql://localhost:5432/itplatform
-spring.datasource.username=itplatform
-spring.datasource.password=itplatform
-spring.jpa.hibernate.ddl-auto=update
-```
-
-Start it:
+From the repo root:
 
 ```bash
-cd backend
-./mvnw spring-boot:run
+./gradlew :backend:bootRun          # Windows: gradlew.bat :backend:bootRun
 ```
 
+Or in IntelliJ: open `ItHelpDeskApplication` and click the green Run arrow.
+
 The API runs on http://localhost:8080.
+
+Run the tests (they use an in-memory H2 database, no Docker needed):
+
+```bash
+./gradlew :backend:test
+```
 
 ### 4. Run the frontend
 

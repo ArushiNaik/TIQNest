@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: ITHelpDesk
+
+  # PostgreSQL from docker-compose.yml (values match .env.example).
+  # Each ${NAME:default} reads an environment variable, or uses the default.
+  datasource:
+    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:itplatform}
+    username: ${POSTGRES_USER:itplatform}
+    password: ${POSTGRES_PASSWORD:itplatform}
+
+  jpa:
+    hibernate:
+      ddl-auto: update   # creates/updates tables from your @Entity classes (fine for a hackathon)
+    open-in-view: false
+
+  # When you run the app, Spring finds docker-compose.yml in the working directory
+  # (the repo root) and starts the "db" container for you if Docker is running.
+  docker:
+    compose:
+      lifecycle-management: start-only   # leave the DB running when the app stops
