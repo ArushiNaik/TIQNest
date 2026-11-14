@@ -1,0 +1,149 @@
+.navbar {
+    position: sticky;
+    top: 14px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+    width: calc(100% - 32px);
+    max-width: 1240px;
+    margin: 14px auto 28px;
+    padding: 10px 14px 10px 20px;
+    background: rgba(13, 18, 40, 0.6);
+    backdrop-filter: blur(18px) saturate(160%);
+    -webkit-backdrop-filter: blur(18px) saturate(160%);
+    border: 1px solid var(--border-color);
+    border-radius: 18px;
+    box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.8), inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    animation: nav-drop 0.7s var(--ease-out) both;
+}
+
+.navBrand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--ink-color) !important;
+    text-decoration: none;
+}
+
+.navBrand::before {
+    content: "";
+    width: 30px;
+    height: 30px;
+    border-radius: 9px;
+    background: conic-gradient(from 0deg, #22d3ee, #7c5cff, #f472b6, #22d3ee);
+    box-shadow: 0 0 20px -2px rgba(124, 92, 255, 0.8);
+    animation: logo-spin 8s linear infinite;
+}
+
+.navBrand:hover::before {
+    animation-duration: 1.5s;
+}
+
+.navLinks {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+}
+
+.navLinks a {
+    position: relative;
+    padding: 8px 14px;
+    border-radius: 10px;
+    color: var(--muted-color);
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-decoration: none;
+    transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+.navLinks a::after {
+    content: "";
+    position: absolute;
+    left: 14px;
+    right: 14px;
+    bottom: 3px;
+    height: 2px;
+    border-radius: 2px;
+    background: var(--gradient-brand);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.35s var(--ease-out);
+}
+
+.navLinks a:hover {
+    color: var(--ink-color);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.navLinks a:hover::after,
+.navLinks a.active::after {
+    transform: scaleX(1);
+}
+
+.navLinks a.active {
+    color: #fff;
+    background: rgba(124, 92, 255, 0.16);
+    text-shadow: 0 0 18px rgba(124, 92, 255, 0.8);
+}
+
+.navUser {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--muted-color);
+    font-size: 0.85rem;
+}
+
+.navSignOut {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    color: #c7cdea;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 7px 13px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.navSignOut:hover {
+    background: rgba(244, 63, 94, 0.15);
+    border-color: rgba(244, 63, 94, 0.5);
+    color: #fecdd3;
+}
+
+@keyframes nav-drop {
+    from { opacity: 0; transform: translateY(-16px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes logo-spin {
+    to { filter: hue-rotate(360deg); }
+}
+
+@media (max-width: 720px) {
+    .navbar {
+        padding: 10px 14px;
+        gap: 10px;
+    }
+
+    .navLinks {
+        order: 3;
+        flex-basis: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+    }
+
+    .navUser {
+        margin-left: auto;
+    }
+}

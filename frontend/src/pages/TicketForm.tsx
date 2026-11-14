@@ -1,7 +1,14 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Alert, Button, Form } from 'react-bootstrap';
-import type { CreateTicketRequest, TicketCategory } from '../types/models';
+import type { CreateTicketRequest, TicketCategory, TicketPriority } from '../types/models';
 import { formatLabel } from './TicketCard';
+
+const priorities: { value: TicketPriority; label: string }[] = [
+    { value: 'LOW', label: 'Low (3 days)' },
+    { value: 'MEDIUM', label: 'Medium (24 h)' },
+    { value: 'HIGH', label: 'High (4 h)' },
+    { value: 'CRITICAL', label: 'Critical (1 h)' },
+];
 
 const categories: TicketCategory[] = ['NETWORK', 'EMAIL', 'VPN', 'PRINTER', 'SOFTWARE', 'HARDWARE', 'ACCOUNT', 'OTHER'];
 
@@ -20,6 +27,7 @@ export default function TicketForm({ requesterEmail, error, fieldErrors, onSave,
         category: 'NETWORK',
         affectedSystem: '',
         requesterEmail,
+        priority: 'MEDIUM',
     });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -55,6 +63,14 @@ export default function TicketForm({ requesterEmail, error, fieldErrors, onSave,
                     <Form.Select name="category" value={formData.category} onChange={handleChange}>
                         {categories.map((c) => (
                             <option key={c} value={c}>{formatLabel(c)}</option>
+                        ))}
+                    </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Label>How urgent is it?</Form.Label>
+                    <Form.Select name="priority" value={formData.priority} onChange={handleChange}>
+                        {priorities.map((p) => (
+                            <option key={p.value} value={p.value}>{p.label}</option>
                         ))}
                     </Form.Select>
                 </Form.Group>

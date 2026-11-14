@@ -1,10 +1,12 @@
 
 .tiqfix-hero {
-    background: linear-gradient(135deg, var(--bs-primary) 0%, #4f46e5 60%, #7c3aed 100%);
+    background: linear-gradient(120deg, #1e1b4b, #4c1d95, #7c5cff, #0e7490);
+    background-size: 300% 300%;
+    animation: tiqfix-flow 12s ease infinite;
     color: #fff;
     border-radius: 16px;
     padding: 28px 32px;
-    box-shadow: 0 10px 30px rgba(13, 110, 253, 0.25);
+    box-shadow: var(--shadow-lg);
 }
 
 .tiqfix-hero-icon {
@@ -36,7 +38,7 @@
     gap: 12px;
     width: 100%;
     text-align: left;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--bs-border-color);
     border-radius: 12px;
     padding: 10px 14px;
@@ -46,18 +48,18 @@
 .tiqfix-issue:hover {
     border-color: var(--bs-primary);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.12);
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.18);
 }
 
 .tiqfix-issue:focus-visible {
-    outline: 3px solid rgba(13, 110, 253, 0.5);
+    outline: 3px solid rgba(79, 70, 229, 0.6);
     outline-offset: 2px;
 }
 
 .tiqfix-issue.active {
     border-color: var(--bs-primary);
-    background: #eef4ff;
-    box-shadow: 0 0 0 2px rgba(13, 110, 253, 0.25);
+    background: rgba(124, 92, 255, 0.1);
+    box-shadow: 0 0 0 2px rgba(79, 70, 229, 0.35);
 }
 
 .tiqfix-issue-icon {
@@ -85,13 +87,13 @@
 }
 
 .tiqfix-verdict.ok {
-    background: #e8f5ee;
-    color: #146c43;
+    background: rgba(16, 185, 129, 0.14);
+    color: #6ee7b7;
 }
 
 .tiqfix-verdict.escalate {
-    background: #fdecec;
-    color: #b02a37;
+    background: rgba(244, 63, 94, 0.14);
+    color: #fda4af;
 }
 
 .tiqfix-remedy {
@@ -111,7 +113,7 @@
     height: 60px;
     display: grid;
     place-items: center;
-    background: #eef4ff;
+    background: rgba(124, 92, 255, 0.1);
     border-radius: 14px;
     flex-shrink: 0;
 }
@@ -121,7 +123,7 @@
 }
 
 .tiqfix-why {
-    background: #f6f8fb;
+    background: rgba(124, 92, 255, 0.1);
     border-radius: 10px;
     padding: 10px 14px;
     font-size: 0.95rem;
@@ -131,11 +133,12 @@
     border: 1px solid var(--bs-border-color);
     border-radius: 12px;
     padding: 14px 16px;
-    background: #fff;
+    background: rgba(255, 255, 255, 0.03);
 }
 
 .tiqfix-command {
-    background: #1e1e2e;
+    background: #05070f;
+    border: 1px solid var(--border-color);
     color: #e6e6f0;
     border-radius: 10px;
     padding: 10px 14px;
@@ -169,13 +172,13 @@
 }
 
 .tiqfix-info {
-    background: #f8f9fa;
+    background: rgba(124, 92, 255, 0.1);
     border-radius: 10px;
     padding: 12px 14px;
 }
 
 .tiqfix-detected {
-    background: #eef4ff;
+    background: rgba(124, 92, 255, 0.1);
     border-radius: 10px;
     padding: 8px 12px;
 }
@@ -202,4 +205,10 @@
 @media (prefers-reduced-motion: reduce) {
     .tiqfix-verdict, .tiqfix-remedy, .tiqfix-feedback, .tiqfix-feedback-done { animation: none; }
     .tiqfix-issue { transition: none; }
+}
+
+@keyframes tiqfix-flow {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }

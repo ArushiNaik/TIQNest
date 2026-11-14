@@ -52,3 +52,7 @@ export function getData<T>(apiUrl: string): Promise<T> {
 export function postData<T>(apiUrl: string, newData?: unknown): Promise<T> {
     return request<T>('POST', apiUrl, newData);
 }
+
+export function patchData<T>(apiUrl: string, changes?: unknown): Promise<T> {
+    return request<T>('PATCH', apiUrl, changes);
+}

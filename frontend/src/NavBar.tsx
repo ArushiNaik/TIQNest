@@ -1,9 +1,8 @@
-import { Button, Nav, Navbar } from 'react-bootstrap';
-import Container from 'react-bootstrap/Container';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { postData } from './services/api-services';
 import { clearSession, getCurrentUser, isAdmin } from './services/auth';
 import { API_URL_LOGOUT } from './services/config';
+import './NavBar.css';
 
 interface NavLinkItem {
     to: string;
@@ -12,6 +11,8 @@ interface NavLinkItem {
 }
 
 const links: NavLinkItem[] = [
+    { to: 'home', title: 'Home', adminOnly: false },
+    { to: 'dashboard', title: 'Dashboard', adminOnly: true },
     { to: 'tickets', title: 'Tickets', adminOnly: false },
     { to: 'fix', title: 'TiqFix', adminOnly: false },
     { to: 'users', title: 'Users', adminOnly: true },
@@ -32,29 +33,23 @@ export default function HelpDeskNavBar() {
     };
 
     return (
-        <Navbar bg="primary" data-bs-theme="dark">
-            <Container>
-                <Navbar.Brand as={Link} to="/tickets" className="fs-3 fw-bold">
-                    🛠️ TIQNest
-                </Navbar.Brand>
-                <Nav className="me-auto fs-5">
-                    {visibleLinks.map((link) => (
-                        <Nav.Link key={link.to} as={Link} to={`/${link.to}`}>
-                            {link.title}
-                        </Nav.Link>
-                    ))}
-                </Nav>
-                {currentUser && (
-                    <>
-                        <Navbar.Text className="me-3">
-                            {currentUser.name} ({isAdmin() ? 'Admin' : 'Employee'})
-                        </Navbar.Text>
-                        <Button variant="outline-light" size="sm" onClick={handleSignOut}>
-                            Sign Out
-                        </Button>
-                    </>
-                )}
-            </Container>
-        </Navbar>
+        <nav className="navbar">
+            <Link to="/home" className="navBrand">TIQNest</Link>
+            <div className="navLinks">
+                {visibleLinks.map((link) => (
+                    <NavLink key={link.to} to={`/${link.to}`}>
+                        {link.title}
+                    </NavLink>
+                ))}
+            </div>
+            {currentUser && (
+                <div className="navUser">
+                    <span>{currentUser.name} · {isAdmin() ? 'Admin' : 'Employee'}</span>
+                    <button type="button" className="navSignOut" onClick={handleSignOut}>
+                        Sign out
+                    </button>
+                </div>
+            )}
+        </nav>
     );
 }
