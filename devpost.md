@@ -40,7 +40,6 @@ A full working flow end to end: log in, report, watch an outage get detected liv
 Layered Spring Boot architecture, JPA relationships, React with TypeScript, Docker Compose, Git branching and PR reviews as a team, and how to use AI coding assistants critically.
 
 ## What's next for TIQNest
-- **"Show, Don't Type":** upload a screenshot of the error and a vision AI pre-fills the ticket (category, system, error code). This was our third pitched feature; we designed it but did not finish it today.
 - Smarter similarity (keywords in titles), real-time banner with WebSockets, real auth (Spring Security/JWT), more TiqFix remedies for macOS.
 
 ## Third-party tools
