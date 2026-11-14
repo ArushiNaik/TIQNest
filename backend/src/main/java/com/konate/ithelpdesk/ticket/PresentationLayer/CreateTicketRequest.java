@@ -1,6 +1,7 @@
 package com.konate.ithelpdesk.ticket.PresentationLayer;
 
 import com.konate.ithelpdesk.ticket.DataTier.TicketCategory;
+import com.konate.ithelpdesk.ticket.DataTier.TicketPriority;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -11,5 +12,6 @@ public record CreateTicketRequest(
         @Size(max = 2000) String description,
         @NotNull TicketCategory category,
         @NotBlank @Size(max = 100) String affectedSystem,
-        @NotBlank @Email String requesterEmail
+        @NotBlank @Email String requesterEmail,
+        TicketPriority priority
 ) {}

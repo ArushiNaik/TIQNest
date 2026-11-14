@@ -19,7 +19,7 @@ When the VPN (or email, Wi-Fi...) goes down, 40 people open 40 tickets for the s
 | **Warn** | `GET /api/incidents/active` returns the active outages with a ready-to-display `bannerMessage`. The portal shows it so users don't open more tickets. |
 | **Block duplicates** | The same person reporting the same category + system again within 5 minutes gets **409 Conflict** and no ticket is created. |
 | **Clean queue** | `GET /api/tickets/queue` only returns `OPEN` / `IN_PROGRESS` tickets, so outage tickets stay out of the agents' way. |
-| **Resolve once** | `PATCH /api/incidents/{id}/resolve` closes the incident **and** marks every linked ticket `RESOLVED` in one call. The banner disappears. |
+| **Resolve once** | `PATCH /api/incidents/{id}/resolve` closes the incident **and** marks every linked ticket `RESOLVED` in one call (with `resolvedAt` and a history entry each). The banner disappears. |
 
 ### What counts as "similar"?
 
@@ -59,6 +59,8 @@ Everything happens in the same transaction as the ticket creation, so the respon
 | `GET` | `/api/tickets` | All tickets, newest first |
 | `GET` | `/api/tickets/queue` | Agent queue: only `OPEN` / `IN_PROGRESS` tickets |
 | `GET` | `/api/tickets/{id}` | One ticket. `404` if unknown |
+| `PATCH` | `/api/tickets/{id}` | Change status, priority, assignee (see [sla-and-audit.md](sla-and-audit.md)) |
+| `GET` | `/api/tickets/{id}/history` | Ticket timeline (see [sla-and-audit.md](sla-and-audit.md)) |
 
 **Create request**
 ```json
@@ -67,9 +69,11 @@ Everything happens in the same transaction as the ticket creation, so the respon
   "description": "Optional details",
   "category": "VPN",
   "affectedSystem": "vpn",
-  "requesterEmail": "alice@corp.com"
+  "requesterEmail": "alice@corp.com",
+  "priority": "HIGH"
 }
 ```
+`priority` is optional (`LOW, MEDIUM, HIGH, CRITICAL`, default `MEDIUM`) and sets the SLA deadline.
 `category` is one of: `NETWORK, EMAIL, VPN, PRINTER, SOFTWARE, HARDWARE, ACCOUNT, OTHER`.
 
 **Ticket response**
@@ -82,7 +86,12 @@ Everything happens in the same transaction as the ticket creation, so the respon
   "affectedSystem": "VPN",
   "requesterEmail": "carol@corp.com",
   "status": "LINKED_TO_INCIDENT",
+  "priority": "HIGH",
+  "assignee": null,
   "createdAt": "2026-11-14T16:02:11Z",
+  "slaDeadline": "2026-11-14T20:02:11Z",
+  "slaStatus": "ON_TRACK",
+  "resolvedAt": null,
   "incidentId": 1
 }
 ```
@@ -177,7 +186,7 @@ Tip: Windows PowerShell hides the body of 4xx responses; use `try { ... } catch 
 
 Reset the data between runs:
 ```powershell
-docker compose exec -T db psql -U user -d ItHelpDesk -c "TRUNCATE tickets, incidents RESTART IDENTITY CASCADE;"
+docker compose exec -T db psql -U user -d ItHelpDesk -c "TRUNCATE tickets, incidents, audit_events RESTART IDENTITY CASCADE;"
 ```
 
 ---

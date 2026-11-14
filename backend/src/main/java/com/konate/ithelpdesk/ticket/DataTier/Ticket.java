@@ -49,6 +49,20 @@ public class Ticket {
     @JoinColumn(name = "incident_id")
     private Incident incident;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    @Builder.Default
+    private TicketPriority priority = TicketPriority.MEDIUM;
+
+    @Column(name = "sla_deadline")
+    private Instant slaDeadline;
+
+    @Column(name = "assignee")
+    private String assignee;
+
+    @Column(name = "resolved_at")
+    private Instant resolvedAt;
+
     @PrePersist
     void onCreate() {
         if (createdAt == null) createdAt = Instant.now();

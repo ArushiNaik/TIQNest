@@ -1,5 +1,7 @@
 package com.konate.ithelpdesk.incident.BusinessLayer;
 
+import com.konate.ithelpdesk.audit.BusinessLayer.AuditService;
+import com.konate.ithelpdesk.audit.DataLayer.AuditAction;
 import com.konate.ithelpdesk.incident.DataLayer.Incident;
 import com.konate.ithelpdesk.incident.DataLayer.IncidentRepository;
 import com.konate.ithelpdesk.incident.DataLayer.IncidentStatus;
@@ -23,6 +25,7 @@ public class IncidentService {
     private final IncidentRepository incidentRepository;
     private final TicketRepository ticketRepository;
     private final IncidentMapper incidentMapper;
+    private final AuditService auditService;
 
     @Transactional(readOnly = true)
     public List<IncidentResponse> findActive() {
@@ -46,11 +49,16 @@ public class IncidentService {
                     "Incident " + id + " is already resolved");
         }
 
+        Instant now = Instant.now();
         incident.setStatus(IncidentStatus.RESOLVED);
-        incident.setResolvedAt(Instant.now());
-        ticketRepository.findByIncidentId(id)
-                .forEach(t -> t.setStatus(TicketStatus.RESOLVED));
-
+        incident.setResolvedAt(now);
+        ticketRepository.findByIncidentId(id).forEach(t -> {
+            TicketStatus oldStatus = t.getStatus();
+            t.setStatus(TicketStatus.RESOLVED);
+            t.setResolvedAt(now);
+            auditService.record(t.getId(), AuditAction.STATUS_CHANGED, oldStatus, TicketStatus.RESOLVED,
+                    AuditService.SYSTEM, "Resolved together with incident #" + id);
+        });
         return incidentMapper.toResponse(incident);
     }
 }
