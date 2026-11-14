@@ -1,52 +1,26 @@
-import { useEffect, useState, type ChangeEvent, type FormEvent } from 'react';
-import { Button, Form } from 'react-bootstrap';
-import type { Ticket, TicketPriority, TicketStatus, User } from '../types/models';
+import { useState, type ChangeEvent, type FormEvent } from 'react';
+import { Alert, Button, Form } from 'react-bootstrap';
+import type { CreateTicketRequest, TicketCategory } from '../types/models';
 import { formatLabel } from './TicketCard';
 
-const priorities: TicketPriority[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];
-const statuses: TicketStatus[] = ['OPEN', 'IN_PROGRESS', 'RESOLVED', 'CLOSED'];
-
-export interface TicketFormData {
-    title: string;
-    description: string;
-    location: string;
-    priority: TicketPriority;
-    status: TicketStatus;
-    assigneeId: string;
-}
+const categories: TicketCategory[] = ['NETWORK', 'EMAIL', 'VPN', 'PRINTER', 'SOFTWARE', 'HARDWARE', 'ACCOUNT', 'OTHER'];
 
 interface TicketFormProps {
-    ticket?: Ticket | null;        // set when updating an existing ticket
-    admins: User[];                // people who can be assigned
-    onSave: (data: TicketFormData, ticketId: string | null) => void;
+    requesterEmail: string;
+    error: string | null;
+    fieldErrors: Record<string, string>;
+    onSave: (data: CreateTicketRequest) => void;
     onCancel: () => void;
 }
 
-const emptyForm: TicketFormData = {
-    title: '',
-    description: '',
-    location: '',
-    priority: 'MEDIUM',
-    status: 'OPEN',
-    assigneeId: '',
-};
-
-export default function TicketForm({ ticket, admins, onSave, onCancel }: TicketFormProps) {
-    const [formData, setFormData] = useState<TicketFormData>(emptyForm);
-    const isUpdating = !!ticket;
-
-    useEffect(() => {
-        if (ticket) {
-            setFormData({
-                title: ticket.title || '',
-                description: ticket.description || '',
-                location: ticket.location || '',
-                priority: ticket.priority || 'MEDIUM',
-                status: ticket.status || 'OPEN',
-                assigneeId: ticket.assigneeId || '',
-            });
-        }
-    }, [ticket]);
+export default function TicketForm({ requesterEmail, error, fieldErrors, onSave, onCancel }: TicketFormProps) {
+    const [formData, setFormData] = useState<CreateTicketRequest>({
+        title: '',
+        description: '',
+        category: 'NETWORK',
+        affectedSystem: '',
+        requesterEmail,
+    });
 
     const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
@@ -55,12 +29,13 @@ export default function TicketForm({ ticket, admins, onSave, onCancel }: TicketF
 
     const handleSubmit = (e: FormEvent) => {
         e.preventDefault();
-        onSave(formData, ticket ? ticket.ticketId : null);
+        onSave(formData);
     };
 
     return (
         <div className="form-container">
-            <h2>{isUpdating ? `Update Ticket #${ticket!.ticketId}` : 'Report a Problem'}</h2>
+            <h2>Report a Problem</h2>
+            {error && <Alert variant="danger">{error}</Alert>}
             <Form onSubmit={handleSubmit}>
                 <Form.Group className="mb-3">
                     <Form.Label>What is the problem?</Form.Label>
@@ -68,10 +43,33 @@ export default function TicketForm({ ticket, admins, onSave, onCancel }: TicketF
                         name="title"
                         value={formData.title}
                         onChange={handleChange}
-                        placeholder="e.g. Wi-Fi not working"
-                        readOnly={isUpdating}
+                        placeholder="e.g. Wi-Fi keeps disconnecting"
+                        maxLength={200}
+                        isInvalid={!!fieldErrors.title}
                         required
                     />
+                    <Form.Control.Feedback type="invalid">{fieldErrors.title}</Form.Control.Feedback>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Label>Category</Form.Label>
+                    <Form.Select name="category" value={formData.category} onChange={handleChange}>
+                        {categories.map((c) => (
+                            <option key={c} value={c}>{formatLabel(c)}</option>
+                        ))}
+                    </Form.Select>
+                </Form.Group>
+                <Form.Group className="mb-3">
+                    <Form.Label>Affected system</Form.Label>
+                    <Form.Control
+                        name="affectedSystem"
+                        value={formData.affectedSystem}
+                        onChange={handleChange}
+                        placeholder="e.g. Office Wi-Fi, Outlook, Printer 2nd floor"
+                        maxLength={100}
+                        isInvalid={!!fieldErrors.affectedSystem}
+                        required
+                    />
+                    <Form.Control.Feedback type="invalid">{fieldErrors.affectedSystem}</Form.Control.Feedback>
                 </Form.Group>
                 <Form.Group className="mb-3">
                     <Form.Label>Details</Form.Label>
@@ -82,57 +80,14 @@ export default function TicketForm({ ticket, admins, onSave, onCancel }: TicketF
                         value={formData.description}
                         onChange={handleChange}
                         placeholder="What happened, and when did it start?"
-                        readOnly={isUpdating}
+                        maxLength={2000}
                     />
                 </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Location</Form.Label>
-                    <Form.Control
-                        name="location"
-                        value={formData.location}
-                        onChange={handleChange}
-                        placeholder="e.g. 2nd floor, meeting room B"
-                        readOnly={isUpdating}
-                    />
-                </Form.Group>
-                <Form.Group className="mb-3">
-                    <Form.Label>Priority</Form.Label>
-                    <Form.Select name="priority" value={formData.priority} onChange={handleChange}>
-                        {priorities.map((p) => (
-                            <option key={p} value={p}>{formatLabel(p)}</option>
-                        ))}
-                    </Form.Select>
-                </Form.Group>
-
-                {isUpdating && (
-                    <>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Status</Form.Label>
-                            <Form.Select name="status" value={formData.status} onChange={handleChange}>
-                                {statuses.map((s) => (
-                                    <option key={s} value={s}>{formatLabel(s)}</option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                        <Form.Group className="mb-3">
-                            <Form.Label>Assignee</Form.Label>
-                            <Form.Select name="assigneeId" value={formData.assigneeId} onChange={handleChange}>
-                                <option value="">Unassigned</option>
-                                {admins.map((admin) => (
-                                    <option key={admin.userId} value={admin.userId}>{admin.name}</option>
-                                ))}
-                            </Form.Select>
-                        </Form.Group>
-                    </>
-                )}
+                <Form.Text className="d-block mb-3">Reported as {requesterEmail}</Form.Text>
 
                 <div className="d-flex gap-2">
-                    <Button variant="primary" type="submit">
-                        {isUpdating ? 'Save Changes' : 'Submit Ticket'}
-                    </Button>
-                    <Button variant="outline-secondary" type="button" onClick={onCancel}>
-                        Cancel
-                    </Button>
+                    <Button variant="primary" type="submit">Submit Ticket</Button>
+                    <Button variant="outline-secondary" type="button" onClick={onCancel}>Cancel</Button>
                 </div>
             </Form>
         </div>

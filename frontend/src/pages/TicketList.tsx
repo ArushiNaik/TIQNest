@@ -5,12 +5,9 @@ import './TicketList.css';
 interface TicketListProps {
     tickets: Ticket[];
     users: User[];
-    canManage: boolean;
-    onEdit: (ticket: Ticket) => void;
-    onClose: (ticket: Ticket) => void;
 }
 
-export default function TicketList({ tickets, users, canManage, onEdit, onClose }: TicketListProps) {
+export default function TicketList({ tickets, users }: TicketListProps) {
     if (tickets.length === 0) {
         return <p className="text-center text-muted mt-4">No tickets yet. Report a problem to get started.</p>;
     }
@@ -18,13 +15,15 @@ export default function TicketList({ tickets, users, canManage, onEdit, onClose 
     return (
         <div className="ticket-list">
             {tickets.map((ticket) => {
-                const reporter = users.find((user) => user.userId === ticket.reporterId);
+                const requester = users.find(
+                    (user) => user.email.toLowerCase() === ticket.requesterEmail.toLowerCase()
+                );
                 return (
-                    <div className="ticket-item" key={ticket.ticketId}>
+                    <div className="ticket-item" key={ticket.id}>
                         <div className="reporter-info">
-                            Reported by {reporter ? reporter.name : `user ${ticket.reporterId}`}
+                            Reported by {requester ? requester.name : ticket.requesterEmail}
                         </div>
-                        <TicketCard ticket={ticket} canManage={canManage} onEdit={onEdit} onClose={onClose} />
+                        <TicketCard ticket={ticket} />
                     </div>
                 );
             })}
