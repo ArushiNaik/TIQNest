@@ -9,8 +9,9 @@ interface NavLinkItem {
     adminOnly: boolean;
 }
 
-// Each feature adds its page here.
-const links: NavLinkItem[] = [];
+const links: NavLinkItem[] = [
+    { to: 'tickets', title: 'Tickets', adminOnly: false },
+];
 
 export default function HelpDeskNavBar() {
     const navigate = useNavigate();
@@ -25,7 +26,7 @@ export default function HelpDeskNavBar() {
     return (
         <Navbar bg="primary" data-bs-theme="dark">
             <Container>
-                <Navbar.Brand as={Link} to="/home" className="fs-3 fw-bold">
+                <Navbar.Brand as={Link} to="/tickets" className="fs-3 fw-bold">
                     🛠️ TIQNest
                 </Navbar.Brand>
                 <Nav className="me-auto fs-5">
