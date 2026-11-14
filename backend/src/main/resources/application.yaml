@@ -35,6 +35,9 @@ server:
   port: 8080
   error:
     include-message: always
+outage-radar:
+  threshold: 3
+  window-minutes: 5
 
 logging:
   level:

@@ -1,5 +1,6 @@
 package com.konate.ithelpdesk.ticket.DataTier;
 
+import com.konate.ithelpdesk.incident.DataLayer.Incident;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -44,6 +45,11 @@ public class Ticket {
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
+
+    // null = normal ticket; set = this ticket is part of a master incident
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "incident_id")
+    private Incident incident;
 
     @PrePersist
     void onCreate() {
