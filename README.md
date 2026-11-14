@@ -136,9 +136,19 @@ The app runs on http://localhost:5173.
 | Method | Path | Purpose |
 |---|---|---|
 | GET, POST | `/api/tickets` | List and create tickets |
-| PATCH | `/api/tickets/{id}` | Update status or assignee |
-| GET | `/api/incidents` | List incidents with affected counts |
+| GET | `/api/tickets/{id}` | One ticket |
+| GET | `/api/tickets/queue` | Agent queue (open tickets not grouped into an incident) |
+| PATCH | `/api/tickets/{id}` | Update status, priority or assignee |
 | GET | `/api/tickets/{id}/history` | Ticket timeline |
+| GET | `/api/incidents` | List incidents with affected counts |
+| GET | `/api/incidents/active` | Active outages for the portal banner |
+| PATCH | `/api/incidents/{id}/resolve` | Resolve an incident and all its tickets |
+| GET | `/api/sla/summary` | SLA counts for the dashboard |
+| GET | `/api/sla/alerts` | Tickets at risk or breached |
+
+Details, examples and error format:
+- [docs/outage-radar.md](docs/outage-radar.md): incident clustering, banner, duplicate blocking, errors
+- [docs/sla-and-audit.md](docs/sla-and-audit.md): SLA timers, ticket updates, history timeline
 
 ## Team workflow
 

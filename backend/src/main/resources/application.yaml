@@ -35,9 +35,17 @@ server:
   port: 8080
   error:
     include-message: always
+
 outage-radar:
   threshold: 3
   window-minutes: 5
+
+sla:
+  hours:
+    critical: 1
+    high: 4
+    medium: 24
+    low: 72
 
 logging:
   level:

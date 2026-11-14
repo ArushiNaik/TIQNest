@@ -27,8 +27,18 @@ public class TicketController {
         return ticketService.findAll();
     }
 
+    @GetMapping("/queue")
+    public List<TicketResponse> queue() {
+        return ticketService.findQueue();
+    }
+
     @GetMapping("/{id}")
     public TicketResponse findById(@PathVariable Long id) {
         return ticketService.findById(id);
+    }
+
+    @PatchMapping("/{id}")
+    public TicketResponse update(@PathVariable Long id, @Valid @RequestBody UpdateTicketRequest request) {
+        return ticketService.update(id, request);
     }
 }

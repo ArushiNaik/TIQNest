@@ -1,5 +1,7 @@
 package com.konate.ithelpdesk.incident.BusinessLayer;
 
+import com.konate.ithelpdesk.audit.BusinessLayer.AuditService;
+import com.konate.ithelpdesk.audit.DataLayer.AuditAction;
 import com.konate.ithelpdesk.incident.DataLayer.Incident;
 import com.konate.ithelpdesk.incident.DataLayer.IncidentRepository;
 import com.konate.ithelpdesk.incident.DataLayer.IncidentStatus;
@@ -23,6 +25,7 @@ public class OutageRadarService {
 
     private final TicketRepository ticketRepository;
     private final IncidentRepository incidentRepository;
+    private final AuditService auditService;
 
     @Value("${outage-radar.threshold:3}")
     private int threshold;
@@ -75,7 +78,11 @@ public class OutageRadarService {
     }
 
     private void link(Ticket t, Incident incident) {
+        TicketStatus oldStatus = t.getStatus();
         t.setIncident(incident);
         t.setStatus(TicketStatus.LINKED_TO_INCIDENT);
+        auditService.record(t.getId(), AuditAction.LINKED_TO_INCIDENT, oldStatus,
+                TicketStatus.LINKED_TO_INCIDENT, AuditService.SYSTEM,
+                "Grouped into incident #" + incident.getId() + ": " + incident.getTitle());
     }
 }

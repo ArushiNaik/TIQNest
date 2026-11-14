@@ -1,22 +1,29 @@
 package com.konate.ithelpdesk.ticket.BusinessLayer;
 
+import com.konate.ithelpdesk.audit.BusinessLayer.AuditService;
+import com.konate.ithelpdesk.audit.DataLayer.AuditAction;
 import com.konate.ithelpdesk.incident.BusinessLayer.OutageRadarService;
+import com.konate.ithelpdesk.sla.SlaPolicy;
 import com.konate.ithelpdesk.ticket.DataTier.Ticket;
+import com.konate.ithelpdesk.ticket.DataTier.TicketPriority;
 import com.konate.ithelpdesk.ticket.DataTier.TicketRepository;
 import com.konate.ithelpdesk.ticket.DataTier.TicketStatus;
+import com.konate.ithelpdesk.ticket.Mapper.TicketMapper;
 import com.konate.ithelpdesk.ticket.PresentationLayer.CreateTicketRequest;
 import com.konate.ithelpdesk.ticket.PresentationLayer.TicketResponse;
-import com.konate.ithelpdesk.ticket.Mapper.TicketMapper;
+import com.konate.ithelpdesk.ticket.PresentationLayer.UpdateTicketRequest;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
+import java.util.Objects;
+
 @Service
 @RequiredArgsConstructor
 public class TicketService {
@@ -24,6 +31,8 @@ public class TicketService {
     private final TicketRepository ticketRepository;
     private final TicketMapper ticketMapper;
     private final OutageRadarService outageRadarService;
+    private final SlaPolicy slaPolicy;
+    private final AuditService auditService;
 
     @Value("${outage-radar.window-minutes:5}")
     private long windowMinutes;
@@ -41,9 +50,60 @@ public class TicketService {
                             + " in the last " + windowMinutes + " minutes. We're on it.");
         }
 
+        if (ticket.getPriority() == null) ticket.setPriority(TicketPriority.MEDIUM);
+        ticket.setSlaDeadline(slaPolicy.deadlineFor(ticket.getPriority(), Instant.now()));
         Ticket saved = ticketRepository.save(ticket);
+
+        auditService.record(saved.getId(), AuditAction.CREATED, null, saved.getStatus(),
+                saved.getRequesterEmail(),
+                "Ticket created with priority " + saved.getPriority()
+                        + ", SLA deadline " + saved.getSlaDeadline());
+
         outageRadarService.scan(saved);
         return ticketMapper.toResponse(saved);
+    }
+
+    @Transactional
+    public TicketResponse update(Long id, UpdateTicketRequest req) {
+        Ticket ticket = getTicket(id);
+        String actor = req.actor();
+
+        if (req.status() != null && req.status() != ticket.getStatus()) {
+            if (req.status() == TicketStatus.LINKED_TO_INCIDENT) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                        "LINKED_TO_INCIDENT is set automatically by the outage radar");
+            }
+            TicketStatus oldStatus = ticket.getStatus();
+            ticket.setStatus(req.status());
+            if (req.status() == TicketStatus.RESOLVED || req.status() == TicketStatus.CLOSED) {
+                if (ticket.getResolvedAt() == null) ticket.setResolvedAt(Instant.now());
+            } else {
+                ticket.setResolvedAt(null);
+            }
+            auditService.record(id, AuditAction.STATUS_CHANGED, oldStatus, req.status(), actor,
+                    "Status changed from " + oldStatus + " to " + req.status());
+        }
+
+        if (req.priority() != null && req.priority() != ticket.getPriority()) {
+            TicketPriority oldPriority = ticket.getPriority();
+            ticket.setPriority(req.priority());
+            ticket.setSlaDeadline(slaPolicy.deadlineFor(req.priority(), ticket.getCreatedAt()));
+            auditService.record(id, AuditAction.PRIORITY_CHANGED, oldPriority, req.priority(), actor,
+                    "Priority changed from " + oldPriority + " to " + req.priority()
+                            + ", new SLA deadline " + ticket.getSlaDeadline());
+        }
+
+        if (req.assignee() != null) {
+            String newAssignee = req.assignee().isBlank() ? null : req.assignee().trim();
+            if (!Objects.equals(newAssignee, ticket.getAssignee())) {
+                String oldAssignee = ticket.getAssignee();
+                ticket.setAssignee(newAssignee);
+                auditService.record(id, AuditAction.ASSIGNED, oldAssignee, newAssignee, actor,
+                        newAssignee == null ? "Unassigned" : "Assigned to " + newAssignee);
+            }
+        }
+
+        return ticketMapper.toResponse(ticket);
     }
 
     @Transactional(readOnly = true)
@@ -59,8 +119,11 @@ public class TicketService {
 
     @Transactional(readOnly = true)
     public TicketResponse findById(Long id) {
+        return ticketMapper.toResponse(getTicket(id));
+    }
+
+    private Ticket getTicket(Long id) {
         return ticketRepository.findById(id)
-                .map(ticketMapper::toResponse)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Ticket " + id + " not found"));
     }
