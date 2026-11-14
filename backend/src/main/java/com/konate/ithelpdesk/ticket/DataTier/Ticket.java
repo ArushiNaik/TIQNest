@@ -1,5 +1,6 @@
 package com.konate.ithelpdesk.ticket.DataTier;
 
+import com.konate.ithelpdesk.incident.DataLayer.Incident;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -30,7 +31,6 @@ public class Ticket {
     @Column(nullable = false)
     private TicketCategory category;
 
-    // What is broken, e.g. "VPN", "Outlook", "Wi-Fi 3rd floor"
     @Column(name = "affected_system", nullable = false)
     private String affectedSystem;
 
@@ -45,10 +45,13 @@ public class Ticket {
     @Column(name = "created_at", nullable = false, updatable = false)
     private Instant createdAt;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "incident_id")
+    private Incident incident;
+
     @PrePersist
     void onCreate() {
         if (createdAt == null) createdAt = Instant.now();
-        // store systems in one format so "vpn" and "VPN " match later
         if (affectedSystem != null) affectedSystem = affectedSystem.trim().toUpperCase();
     }
 }

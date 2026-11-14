@@ -14,11 +14,6 @@ public record TicketResponse(
         String affectedSystem,
         String requesterEmail,
         TicketStatus status,
-        Instant createdAt
-) {
-    public static TicketResponse from(Ticket t) {
-        return new TicketResponse(t.getId(), t.getTitle(), t.getDescription(),
-                t.getCategory(), t.getAffectedSystem(), t.getRequesterEmail(),
-                t.getStatus(), t.getCreatedAt());
-    }
-}
+        Instant createdAt,
+        Long incidentId
+) {}
