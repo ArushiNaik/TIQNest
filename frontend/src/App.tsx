@@ -5,6 +5,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import TicketPage from './pages/TicketPage';
 import UserPage from './pages/UserPage';
+import TiqFixPage from './pages/tiqfix/TiqFixPage';
 import { getCurrentUser, isAdmin } from './services/auth';
 
 function RequireLogin({ children }: { children: ReactElement }) {
@@ -29,6 +30,7 @@ function AppContent() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/home" element={<RequireLogin><HomePage /></RequireLogin>} />
                 <Route path="/tickets" element={<RequireLogin><TicketPage /></RequireLogin>} />
+                <Route path="/fix" element={<RequireLogin><TiqFixPage /></RequireLogin>} />
                 <Route path="/users" element={<RequireAdmin><UserPage /></RequireAdmin>} />
             </Routes>
         </div>
