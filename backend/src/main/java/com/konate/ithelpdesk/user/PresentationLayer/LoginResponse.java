@@ -1,4 +1,4 @@
 package com.konate.ithelpdesk.user.PresentationLayer;
 
-public record LoginResponse(String token, UserResponseModel userResponseModel) {
+public record LoginResponse(String token, UserResponseModel user) {
 }

@@ -13,7 +13,7 @@ public interface UserRequestMapper {
     @Mappings({
             @Mapping(target = "id", ignore = true),
             @Mapping(expression = "java(userIdentifier)", target = "userIdentifier"),
-            @Mapping(source = "requestModel.username", target = "username"),
+            @Mapping(source = "requestModel.name", target = "name"),
             @Mapping(source = "requestModel.email", target = "email"),
             @Mapping(source = "requestModel.password", target = "password"),
             @Mapping(source = "requestModel.role", target = "role")

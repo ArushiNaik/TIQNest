@@ -1,21 +1,27 @@
-// Plain interfaces that mirror the backend DTOs. Keep them simple.
-
-export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'CLOSED';
-export type TicketPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
 export type UserRole = 'EMPLOYEE' | 'ADMIN';
 
+export type TicketCategory = 'NETWORK' | 'EMAIL' | 'VPN' | 'PRINTER' | 'SOFTWARE' | 'HARDWARE' | 'ACCOUNT' | 'OTHER';
+
+export type TicketStatus = 'OPEN' | 'IN_PROGRESS' | 'LINKED_TO_INCIDENT' | 'RESOLVED' | 'CLOSED';
+
 export interface Ticket {
-    ticketId: string;
+    id: number;
+    title: string;
+    description: string | null;
+    category: TicketCategory;
+    affectedSystem: string;
+    requesterEmail: string;
+    status: TicketStatus;
+    createdAt: string;
+    incidentId: number | null;
+}
+
+export interface CreateTicketRequest {
     title: string;
     description: string;
-    location: string;
-    status: TicketStatus;
-    priority: TicketPriority;
-    reporterId: string;
-    assigneeId: string;
-    incidentId?: string;
-    createdAt: string;
-    slaDeadline?: string;
+    category: TicketCategory;
+    affectedSystem: string;
+    requesterEmail: string;
 }
 
 export interface User {
@@ -23,12 +29,22 @@ export interface User {
     name: string;
     email: string;
     role: UserRole;
-    password?: string; // only sent when creating or changing a user, never displayed
+}
+
+export interface UserRequest {
+    name: string;
+    email: string;
+    password: string;
+    role: UserRole;
 }
 
 export interface LoginResponse {
-    userId: string;
-    name: string;
-    role: UserRole;
+    token: string;
+    user: User;
+}
+
+export interface ApiError {
+    status: number;
     message?: string;
+    fieldErrors?: Record<string, string>;
 }

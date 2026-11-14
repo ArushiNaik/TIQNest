@@ -8,8 +8,11 @@ import com.konate.ithelpdesk.user.MappingLayer.UserResponseMapper;
 import com.konate.ithelpdesk.user.PresentationLayer.LoginResponse;
 import com.konate.ithelpdesk.user.PresentationLayer.UserRequestModel;
 import com.konate.ithelpdesk.user.PresentationLayer.UserResponseModel;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -37,10 +40,15 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public UserResponseModel registerUser(UserRequestModel requestModel) {
         if (userRepository.findAllByEmail(requestModel.getEmail()).isPresent()) {
-            throw new IllegalArgumentException("Email already used: " + requestModel.getEmail());
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Email already used: " + requestModel.getEmail());
         }
         User user = userRequestMapper.toRequestModel(requestModel, new UserIdentifier());
         return userResponseMapper.toResponseModel(userRepository.save(user));
+    }
+
+    @Override
+    public List<UserResponseModel> findAllUsers() {
+        return userResponseMapper.entityListToResponseModelList(userRepository.findAll());
     }
 
     @Override
@@ -49,7 +57,7 @@ public class AuthServiceImpl implements AuthService {
             return Optional.empty();
         }
         return userRepository.findAllByEmail(email)
-                .filter(user -> password.matches(user.getPassword()))
+                .filter(user -> password.equals(user.getPassword()))
                 .map(user -> {
                     String token = UUID.randomUUID().toString();
                     sessions.put(token, user);

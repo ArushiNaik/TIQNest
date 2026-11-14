@@ -1,7 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { postData } from '../services/api-services';
-import { setCurrentUser } from '../services/auth';
+import { ApiRequestError, postData } from '../services/api-services';
+import { saveSession } from '../services/auth';
 import { API_URL_LOGIN } from '../services/config';
 import type { LoginResponse } from '../types/models';
 import './LoginPage.css';
@@ -22,15 +22,15 @@ export default function LoginPage() {
 
         try {
             const data = await postData<LoginResponse>(API_URL_LOGIN, { email, password });
-            if (data && data.userId) {
-                setCurrentUser({ userId: data.userId, name: data.name, role: data.role });
-                navigate('/home');
-            } else {
-                setError(data?.message || 'Invalid email or password');
-            }
+            saveSession({ token: data.token, user: data.user });
+            navigate('/home');
         } catch (err) {
             console.error('Login error:', err);
-            setError('Could not sign in. Check your email and password and try again.');
+            if (err instanceof ApiRequestError && err.status === 401) {
+                setError('Wrong email or password.');
+            } else {
+                setError((err as Error).message || 'Could not sign in. Please try again.');
+            }
         }
     };
 

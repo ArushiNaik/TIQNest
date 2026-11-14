@@ -11,14 +11,10 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface UserResponseMapper {
     @Mappings({
-            @Mapping(source = "userIdentifier.adId", target = "ad_id"),
+            @Mapping(source = "userIdentifier.userId", target = "userId"),
             @Mapping(source = "name", target = "name"),
             @Mapping(source = "email", target = "email"),
-            @Mapping(source = "password", target = "password"),
             @Mapping(source = "role", target = "role")
-
-
-
     })
     UserResponseModel toResponseModel(User user);
     List<UserResponseModel> entityListToResponseModelList(List<User> userList);
