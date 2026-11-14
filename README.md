@@ -36,7 +36,8 @@ Built during a one-day hackathon. Demo data is fake.
 ├── settings.gradle       Gradle root; includes backend/
 ├── gradlew               Gradle wrapper (run from the repo root)
 ├── frontend/             React app (Vite + TypeScript)
-├── docker-compose.yml    PostgreSQL 16
+├── Dockerfile            builds the backend into a container image
+├── docker-compose.yml    PostgreSQL 16, pgAdmin, and the app
 ├── .env.example          copy to .env for local DB settings
 └── README.md
 ```
@@ -68,33 +69,40 @@ git clone <repository-url>
 cd <repository-folder>
 ```
 
-### 2. Start the database
+### 2. Start the database (and pgAdmin)
 
-Option A: Docker (recommended). The repo has a `docker-compose.yml` with a PostgreSQL 16 service.
+The repo has a `docker-compose.yml` with three services:
+
+| Service | What it is | URL / port |
+|---|---|---|
+| `db` | PostgreSQL 16 | `localhost:5434`, database `ItHelpDesk`, user `user` / `pwd` |
+| `pgadmin` | Web UI to look at the database | http://localhost:9000 (`admin@hackathon2026.com` / `adminpassword`) |
+| `app` | The Spring Boot app in a container (optional) | http://localhost:8080 |
 
 ```bash
 cp .env.example .env        # optional: change values in .env
-docker compose up -d db     # start Postgres in the background
-docker compose ps           # wait until STATUS shows "(healthy)"
+docker compose up -d        # starts db + pgadmin (not the app)
 ```
 
-Connect with `docker exec -it itplatform-db psql -U itplatform -d itplatform`.
-Stop it with `docker compose down` (data is kept in the `db-data` volume; `docker compose down -v` wipes it).
-
-Option B: use a local PostgreSQL install and create a database named `itplatform`.
+In pgAdmin, add a server with host `db`, port `5432`, user `user`, password `pwd`.
 
 ### 3. Run the backend
 
-The database settings are already in `backend/src/main/resources/application.yaml`
-(they match `.env.example`). If Docker is running, the app starts the `db` container for you.
-
-From the repo root:
+Option A, while developing: run `ItHelpDeskApplication` in IntelliJ, or from the repo root:
 
 ```bash
 ./gradlew :backend:bootRun          # Windows: gradlew.bat :backend:bootRun
 ```
 
-Or in IntelliJ: open `ItHelpDeskApplication` and click the green Run arrow.
+If Docker Desktop is running, Spring starts `db` and `pgadmin` for you.
+
+Option B, everything in Docker (for the demo):
+
+```bash
+docker compose --profile app up -d --build
+```
+
+Stop the IntelliJ run first, because both use port 8080.
 
 The API runs on http://localhost:8080.
 
@@ -103,6 +111,8 @@ Run the tests (they use an in-memory H2 database, no Docker needed):
 ```bash
 ./gradlew :backend:test
 ```
+
+Seed data: put SQL inserts in `backend/src/main/resources/data.sql`. It runs on every start, after Hibernate creates the tables.
 
 ### 4. Run the frontend
 

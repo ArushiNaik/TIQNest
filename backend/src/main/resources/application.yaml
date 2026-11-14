@@ -1,21 +1,82 @@
 spring:
   application:
-    name: ITHelpDesk
+    name: it-helpdesk
 
-  # PostgreSQL from docker-compose.yml (values match .env.example).
-  # Each ${NAME:default} reads an environment variable, or uses the default.
+  # Local run (IntelliJ / bootRun): Postgres from docker-compose on localhost:5434.
+  # ${NAME:default} reads an environment variable, or uses the default (same values as .env.example).
   datasource:
-    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5432}/${POSTGRES_DB:itplatform}
-    username: ${POSTGRES_USER:itplatform}
-    password: ${POSTGRES_PASSWORD:itplatform}
+    url: jdbc:postgresql://localhost:${POSTGRES_PORT:5434}/${POSTGRES_DB:ItHelpDesk}
+    username: ${POSTGRES_USER:user}
+    password: ${POSTGRES_PASSWORD:pwd}
 
   jpa:
-    hibernate:
-      ddl-auto: update   # creates/updates tables from your @Entity classes (fine for a hackathon)
+    show-sql: true
     open-in-view: false
+    hibernate:
+      # Hibernate creates and updates the tables from the entities
+      ddl-auto: update
+    # Run data.sql only after Hibernate has created the tables
+    defer-datasource-initialization: true
 
-  # When you run the app, Spring finds docker-compose.yml in the working directory
-  # (the repo root) and starts the "db" container for you if Docker is running.
+  sql:
+    init:
+      mode: always
+      # "optional:" = don't crash if data.sql doesn't exist yet
+      data-locations: optional:classpath:data.sql
+      schema-locations: optional:classpath:schema.sql
+
+  # When you run the app locally, Spring starts db and pgAdmin from docker-compose.yml
+  # (repo root) if Docker is running. The "app" service is skipped (it's behind a compose profile).
   docker:
     compose:
-      lifecycle-management: start-only   # leave the DB running when the app stops
+      lifecycle-management: start-only   # leave the containers running when the app stops
+
+server:
+  port: 8080
+  error:
+    include-message: always
+
+logging:
+  level:
+    root: INFO
+    com.konate: DEBUG
+    org.hibernate.SQL: DEBUG
+    org.hibernate.orm.jdbc.bind: TRACE   # shows the values sent with each SQL query
+
+---
+# Docker profile: used when the app runs inside docker-compose
+# (SPRING_PROFILES_ACTIVE=docker). The database host is the compose service
+# name "db" and the internal port is 5432.
+spring:
+  config:
+    activate:
+      on-profile: docker
+
+  datasource:
+    url: jdbc:postgresql://db:5432/${POSTGRES_DB:ItHelpDesk}
+    hikari:
+      # Wait up to 60 s for Postgres to be ready
+      initialization-fail-timeout: 60000
+
+---
+# Test profile: in-memory H2 database, no seed data
+spring:
+  config:
+    activate:
+      on-profile: test
+
+  datasource:
+    url: jdbc:h2:mem:testdb
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+
+  jpa:
+    database-platform: org.hibernate.dialect.H2Dialect
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+
+  sql:
+    init:
+      mode: never

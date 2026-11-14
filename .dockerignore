@@ -1,0 +1,8 @@
+# Files Docker does not need when building the image (makes builds faster).
+.git
+.idea
+.gradle
+**/build
+frontend
+.env
+*.md
