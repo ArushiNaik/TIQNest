@@ -31,11 +31,9 @@ public class TicketService {
     @Transactional
     public TicketResponse create(CreateTicketRequest req) {
         Ticket ticket = ticketMapper.toEntity(req);
-        // same normalization as @PrePersist, so the duplicate check compares like with like
         String system = req.affectedSystem().trim().toUpperCase();
         Instant since = Instant.now().minus(Duration.ofMinutes(windowMinutes));
 
-        // Anti-flood 1: same person, same problem, recently -> refuse
         if (ticketRepository.existsByRequesterEmailIgnoreCaseAndCategoryAndAffectedSystemAndCreatedAtAfter(
                 req.requesterEmail(), req.category(), system, since)) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
@@ -53,7 +51,6 @@ public class TicketService {
         return ticketMapper.toResponseList(ticketRepository.findAllByOrderByCreatedAtDesc());
     }
 
-    // Anti-flood 2: the agent queue hides tickets that belong to an outage
     @Transactional(readOnly = true)
     public List<TicketResponse> findQueue() {
         return ticketMapper.toResponseList(ticketRepository.findByStatusInOrderByCreatedAtDesc(

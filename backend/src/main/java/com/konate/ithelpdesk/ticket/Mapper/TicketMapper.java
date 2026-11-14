@@ -12,9 +12,9 @@ import java.util.List;
 public interface TicketMapper {
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "status", ignore = true)     // @Builder.Default gives OPEN
-    @Mapping(target = "createdAt", ignore = true)  // set in @PrePersist
-    @Mapping(target = "incident", ignore = true)   // set by the radar
+    @Mapping(target = "status", ignore = true)
+    @Mapping(target = "createdAt", ignore = true)
+    @Mapping(target = "incident", ignore = true)
     Ticket toEntity(CreateTicketRequest request);
 
     @Mapping(target = "incidentId", source = "incident.id")

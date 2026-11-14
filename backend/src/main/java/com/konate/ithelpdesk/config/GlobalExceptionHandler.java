@@ -18,22 +18,16 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-/**
- * Catches exceptions thrown by any controller or service and turns them into an ApiError JSON.
- * Without this, Spring returns its default error body, which differs from case to case.
- */
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 404 not found, 409 duplicate / already resolved... thrown by our services
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ApiError> handleResponseStatus(ResponseStatusException ex, HttpServletRequest req) {
         HttpStatus status = HttpStatus.valueOf(ex.getStatusCode().value());
         return build(status, ex.getReason(), req, null);
     }
 
-    // 400: @Valid failed (blank title, bad email...) -> tell the client WHICH fields
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ApiError> handleValidation(MethodArgumentNotValidException ex, HttpServletRequest req) {
         Map<String, String> fieldErrors = new LinkedHashMap<>();
@@ -42,7 +36,6 @@ public class GlobalExceptionHandler {
         return build(HttpStatus.BAD_REQUEST, "Some fields are invalid", req, fieldErrors);
     }
 
-    // 400: broken JSON or a value that doesn't fit, e.g. "category": "WIFI"
     @ExceptionHandler(HttpMessageNotReadableException.class)
     public ResponseEntity<ApiError> handleUnreadable(HttpMessageNotReadableException ex, HttpServletRequest req) {
         return build(HttpStatus.BAD_REQUEST,
@@ -51,20 +44,17 @@ public class GlobalExceptionHandler {
                 req, null);
     }
 
-    // 400: wrong type in the URL, e.g. /api/tickets/abc
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiError> handleTypeMismatch(MethodArgumentTypeMismatchException ex, HttpServletRequest req) {
         return build(HttpStatus.BAD_REQUEST,
                 "Invalid value '" + ex.getValue() + "' for '" + ex.getName() + "'", req, null);
     }
 
-    // 404: URL that doesn't exist at all, e.g. /api/tikets
     @ExceptionHandler(NoResourceFoundException.class)
     public ResponseEntity<ApiError> handleNoResource(NoResourceFoundException ex, HttpServletRequest req) {
         return build(HttpStatus.NOT_FOUND, "No endpoint " + req.getRequestURI(), req, null);
     }
 
-    // 500: anything unexpected. Log the full stack trace, but don't leak it to the client.
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleUnexpected(Exception ex, HttpServletRequest req) {
         log.error("Unexpected error on {} {}", req.getMethod(), req.getRequestURI(), ex);

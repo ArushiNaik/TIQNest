@@ -20,21 +20,20 @@ public class Incident {
     private Long id;
 
     @Column(nullable = false)
-    private String title;            // e.g. "Possible outage: VPN"
+    private String title;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TicketCategory category;
 
     @Column(name = "affected_system", nullable = false)
-    private String affectedSystem;   // same normalized value as the tickets, e.g. "VPN"
+    private String affectedSystem;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
     private IncidentStatus status = IncidentStatus.ACTIVE;
 
-    // how many tickets are linked; shown on the banner ("12 people affected")
     @Column(name = "ticket_count", nullable = false)
     @Builder.Default
     private int ticketCount = 0;

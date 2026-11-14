@@ -24,18 +24,15 @@ public class OutageRadarService {
     private final TicketRepository ticketRepository;
     private final IncidentRepository incidentRepository;
 
-    // Tunable from application.yaml; defaults = 3 tickets in 5 minutes
     @Value("${outage-radar.threshold:3}")
     private int threshold;
 
     @Value("${outage-radar.window-minutes:5}")
     private long windowMinutes;
 
-    /** Call this right after a ticket is saved. Runs inside the caller's transaction. */
     @Transactional
     public void scan(Ticket ticket) {
 
-        // 1. Outage already known? -> just attach this ticket to it
         var existing = incidentRepository.findFirstByCategoryAndAffectedSystemAndStatus(
                 ticket.getCategory(), ticket.getAffectedSystem(), IncidentStatus.ACTIVE);
 
@@ -49,13 +46,12 @@ public class OutageRadarService {
             return;
         }
 
-        // 2. No incident yet -> look for a cluster in the time window
         Instant since = Instant.now().minus(Duration.ofMinutes(windowMinutes));
         List<Ticket> cluster = ticketRepository
                 .findByCategoryAndAffectedSystemAndCreatedAtAfterOrderByCreatedAtAsc(
                         ticket.getCategory(), ticket.getAffectedSystem(), since)
                 .stream()
-                .filter(t -> t.getIncident() == null)   // ignore tickets already grouped
+                .filter(t -> t.getIncident() == null)
                 .toList();
 
         if (cluster.size() < threshold) {
@@ -64,7 +60,6 @@ public class OutageRadarService {
             return;
         }
 
-        // 3. Threshold reached -> create the master incident and link the whole cluster
         Incident incident = incidentRepository.save(Incident.builder()
                 .title("Possible outage: " + ticket.getAffectedSystem()
                         + " (" + ticket.getCategory() + ")")

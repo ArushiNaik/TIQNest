@@ -15,5 +15,5 @@ public record IncidentResponse(
         Instant detectedAt,
         Instant lastReportAt,
         Instant resolvedAt,
-        String bannerMessage      // text ready for the portal banner
+        String bannerMessage
 ) {}

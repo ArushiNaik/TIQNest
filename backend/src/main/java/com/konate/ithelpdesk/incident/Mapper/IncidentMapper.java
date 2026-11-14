@@ -10,7 +10,6 @@ import java.util.List;
 @Mapper(componentModel = "spring")
 public interface IncidentMapper {
 
-    // bannerMessage doesn't exist on the entity -> computed by the default method below
     @Mapping(target = "bannerMessage", expression = "java(bannerMessage(incident))")
     IncidentResponse toResponse(Incident incident);
 

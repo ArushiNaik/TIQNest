@@ -35,14 +35,12 @@ public class IncidentService {
         return incidentMapper.toResponseList(incidentRepository.findAll());
     }
 
-    // Fixing the outage resolves every linked ticket in one go
     @Transactional
     public IncidentResponse resolve(Long id) {
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Incident " + id + " not found"));
 
-        // Resolving twice would overwrite resolvedAt -> refuse it
         if (incident.getStatus() == IncidentStatus.RESOLVED) {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Incident " + id + " is already resolved");
@@ -51,7 +49,7 @@ public class IncidentService {
         incident.setStatus(IncidentStatus.RESOLVED);
         incident.setResolvedAt(Instant.now());
         ticketRepository.findByIncidentId(id)
-                .forEach(t -> t.setStatus(TicketStatus.RESOLVED));   // dirty checking saves these
+                .forEach(t -> t.setStatus(TicketStatus.RESOLVED));
 
         return incidentMapper.toResponse(incident);
     }

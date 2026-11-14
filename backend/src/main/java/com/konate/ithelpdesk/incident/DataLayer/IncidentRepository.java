@@ -8,11 +8,8 @@ import java.util.Optional;
 
 public interface IncidentRepository extends JpaRepository<Incident, Long> {
 
-    // Is there already an open outage for this category + system?
-    // If yes, new tickets join it instead of creating a second incident.
     Optional<Incident> findFirstByCategoryAndAffectedSystemAndStatus(
             TicketCategory category, String affectedSystem, IncidentStatus status);
 
-    // For the banner: all active outages, newest first
     List<Incident> findByStatusOrderByDetectedAtDesc(IncidentStatus status);
 }
