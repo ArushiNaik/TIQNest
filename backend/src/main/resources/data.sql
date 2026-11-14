@@ -4,6 +4,6 @@ VALUES ('user_demo-admin', 'Christine Gerald', 'Crhistine@demo.com',
        ('user_demo-employee-1', 'Bahaman', 'Bahaman@demo.com',
         'pws', 'EMPLOYEE'),
        ('user_demo-employee-2', 'Amin', 'Amin@demo.com',
-        'pwd', 'EMPLOYEE');
+        'pwd', 'EMPLOYEE')
 
 
