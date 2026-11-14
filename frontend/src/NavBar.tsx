@@ -1,7 +1,9 @@
 import { Button, Nav, Navbar } from 'react-bootstrap';
 import Container from 'react-bootstrap/Container';
 import { Link, useNavigate } from 'react-router-dom';
-import { getCurrentUser, signOut } from './services/auth';
+import { postData } from './services/api-services';
+import { clearSession, getCurrentUser, isAdmin } from './services/auth';
+import { API_URL_LOGOUT } from './services/config';
 
 interface NavLinkItem {
     to: string;
@@ -17,10 +19,14 @@ const links: NavLinkItem[] = [
 export default function HelpDeskNavBar() {
     const navigate = useNavigate();
     const currentUser = getCurrentUser();
-    const visibleLinks = links.filter((link) => !link.adminOnly || currentUser?.role === 'ADMIN');
+    const visibleLinks = links.filter((link) => !link.adminOnly || isAdmin());
 
-    const handleSignOut = () => {
-        signOut();
+    const handleSignOut = async () => {
+        try {
+            await postData(API_URL_LOGOUT);
+        } catch {
+        }
+        clearSession();
         navigate('/login');
     };
 
@@ -40,7 +46,7 @@ export default function HelpDeskNavBar() {
                 {currentUser && (
                     <>
                         <Navbar.Text className="me-3">
-                            {currentUser.name} ({currentUser.role === 'ADMIN' ? 'Admin' : 'Employee'})
+                            {currentUser.name} ({isAdmin() ? 'Admin' : 'Employee'})
                         </Navbar.Text>
                         <Button variant="outline-light" size="sm" onClick={handleSignOut}>
                             Sign Out

@@ -1,51 +1,54 @@
-async function parseResponse<T>(response: Response, fallbackMessage: string): Promise<T> {
-    const resultText = await response.text();
-    if (!response.ok) {
-        throw new Error(resultText || fallbackMessage);
+import type { ApiError } from '../types/models';
+import { clearSession, getSession } from './auth';
+
+export class ApiRequestError extends Error {
+    status: number;
+    fieldErrors?: Record<string, string>;
+
+    constructor(status: number, message: string, fieldErrors?: Record<string, string>) {
+        super(message);
+        this.status = status;
+        this.fieldErrors = fieldErrors;
     }
-    if (!resultText) {
-        return undefined as T;
-    }
+}
+
+async function request<T>(method: string, apiUrl: string, body?: unknown): Promise<T> {
+    const headers: Record<string, string> = {};
+    const token = getSession()?.token;
+    if (token) headers['Authorization'] = `Bearer ${token}`;
+    if (body !== undefined) headers['Content-Type'] = 'application/json';
+
+    let response: Response;
     try {
-        return JSON.parse(resultText) as T;
+        response = await fetch(apiUrl, {
+            method,
+            headers,
+            body: body === undefined ? undefined : JSON.stringify(body),
+        });
     } catch {
-        return resultText as T;
+        throw new ApiRequestError(0, 'Cannot reach the server. Is the backend running on port 8080?');
     }
+
+    const text = await response.text();
+    if (!response.ok) {
+        if (response.status === 401 && token) {
+            clearSession();
+            window.location.assign('/login');
+        }
+        let error: Partial<ApiError> = {};
+        try {
+            error = JSON.parse(text) as ApiError;
+        } catch {
+        }
+        throw new ApiRequestError(response.status, error.message || `Request failed (${response.status})`, error.fieldErrors);
+    }
+    return (text ? JSON.parse(text) : undefined) as T;
 }
 
-export async function getData<T>(apiUrl: string): Promise<T> {
-    const response = await fetch(apiUrl, { method: 'GET' });
-    return parseResponse<T>(response, 'Failed to load data');
+export function getData<T>(apiUrl: string): Promise<T> {
+    return request<T>('GET', apiUrl);
 }
 
-export async function postData<T>(apiUrl: string, newData: unknown): Promise<T> {
-    const response = await fetch(apiUrl, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(newData),
-    });
-    return parseResponse<T>(response, 'Failed to save');
-}
-
-export async function putData<T>(apiUrl: string, updatedData: unknown): Promise<T> {
-    const response = await fetch(apiUrl, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(updatedData),
-    });
-    return parseResponse<T>(response, 'Failed to update');
-}
-
-export async function patchData<T>(apiUrl: string, changes: unknown): Promise<T> {
-    const response = await fetch(apiUrl, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(changes),
-    });
-    return parseResponse<T>(response, 'Failed to update');
-}
-
-export async function deleteData(apiUrl: string): Promise<void> {
-    const response = await fetch(apiUrl, { method: 'DELETE' });
-    await parseResponse<void>(response, `Failed to delete (status ${response.status})`);
+export function postData<T>(apiUrl: string, newData?: unknown): Promise<T> {
+    return request<T>('POST', apiUrl, newData);
 }
