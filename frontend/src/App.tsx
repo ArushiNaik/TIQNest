@@ -4,10 +4,17 @@ import HelpDeskNavBar from './NavBar';
 import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import TicketPage from './pages/TicketPage';
+import UserPage from './pages/UserPage';
 import { getCurrentUser } from './services/auth';
 
 function RequireLogin({ children }: { children: ReactElement }) {
     return getCurrentUser() ? children : <Navigate to="/login" replace />;
+}
+
+function RequireAdmin({ children }: { children: ReactElement }) {
+    const currentUser = getCurrentUser();
+    if (!currentUser) return <Navigate to="/login" replace />;
+    return currentUser.role === 'ADMIN' ? children : <Navigate to="/tickets" replace />;
 }
 
 function AppContent() {
@@ -23,6 +30,7 @@ function AppContent() {
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/home" element={<RequireLogin><HomePage /></RequireLogin>} />
                 <Route path="/tickets" element={<RequireLogin><TicketPage /></RequireLogin>} />
+                <Route path="/users" element={<RequireAdmin><UserPage /></RequireAdmin>} />
             </Routes>
         </div>
     );
