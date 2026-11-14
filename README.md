@@ -218,5 +218,6 @@ curl -X POST http://localhost:8080/api/auth/login \
 
 <p align="center">
 <img width="552" height="151" alt="image" src="https://github.com/user-attachments/assets/a5770688-9597-4271-97f1-cda336307ddd" />
+  <p></p>
   Built in one day at <b>HackDécouverte 2026</b> 🚀
 </p>
