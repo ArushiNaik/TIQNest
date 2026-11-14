@@ -14,7 +14,7 @@ spring:
     open-in-view: false
     hibernate:
       # Hibernate creates and updates the tables from the entities
-      ddl-auto: update
+      ddl-auto: create
     # Run data.sql only after Hibernate has created the tables
     defer-datasource-initialization: true
 
