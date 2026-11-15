@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/incidents")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "http://localhost:5173")
 public class IncidentController {
 
     private final IncidentService incidentService;

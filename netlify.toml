@@ -1,0 +1,17 @@
+# Netlify hosts the React frontend only. The Spring Boot backend and Postgres run elsewhere
+# (e.g. Render); point the frontend at it with VITE_API_BASE_URL in Netlify's environment variables,
+# for example https://your-backend.onrender.com/api, then redeploy (Vite reads it at build time).
+
+[build]
+  base = "frontend"
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+# Single-page app: let React Router handle /vision, /fix, /tickets... on refresh.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
