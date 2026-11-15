@@ -213,7 +213,10 @@ curl -X POST http://localhost:8080/api/auth/login \
 - Pull from `main` before starting new work.
 - Never commit passwords or API keys. Use environment variables or a local `.env` file.
 
-
+## 👥 Team
+ 
+**Malick Konate**, **Ilian Adeleke**, **Arushi Naik** and **Jacky Bolap**.
+ 
 ---
 
 <p align="center">
