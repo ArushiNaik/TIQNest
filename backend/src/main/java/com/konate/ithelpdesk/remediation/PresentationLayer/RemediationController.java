@@ -21,8 +21,9 @@ public class RemediationController {
     }
 
     @PostMapping("/recommend")
-    public RecommendationResponse recommend(@Valid @RequestBody RecommendationRequest request) {
-        return remediationService.recommend(request);
+    public RecommendationResponse recommend(@Valid @RequestBody RecommendationRequest request,
+                                            @RequestAttribute(name = "currentUser", required = false) User currentUser) {
+        return remediationService.recommend(request, currentUser);
     }
 
     @GetMapping("/catalog")
@@ -35,7 +36,7 @@ public class RemediationController {
     public RemediationAttemptResponse recordAttempt(
             @Valid @RequestBody RemediationAttemptRequest request,
             @RequestAttribute(name = "currentUser", required = false) User currentUser) {
-        return remediationService.recordAttempt(request, emailOf(currentUser));
+        return remediationService.recordAttempt(request, currentUser);
     }
 
     @GetMapping("/attempts")
@@ -45,10 +46,6 @@ public class RemediationController {
         if (ticketId != null && ticketId <= 0) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "ticketId must be a positive number");
         }
-        return remediationService.history(ticketId, emailOf(currentUser));
-    }
-
-    private static String emailOf(User user) {
-        return user != null ? user.getEmail() : null;
+        return remediationService.history(ticketId, currentUser);
     }
 }

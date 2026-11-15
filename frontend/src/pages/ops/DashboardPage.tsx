@@ -12,6 +12,7 @@ import {
 import type { Incident, SlaSummary, Ticket } from '../../types/models';
 import { formatLabel } from '../TicketCard';
 import DemoOutageButton from './DemoOutageButton';
+import AdminReviewPanel from '../vision/AdminReviewPanel';
 import SlaBadge from './SlaBadge';
 import TicketDetailsModal from './TicketDetailsModal';
 import './ops.css';
@@ -176,6 +177,8 @@ export default function DashboardPage() {
                     </div>
                 </Col>
             </Row>
+
+            <AdminReviewPanel />
 
             <TicketDetailsModal ticketId={openTicketId} onClose={() => setOpenTicketId(null)} />
         </Container>

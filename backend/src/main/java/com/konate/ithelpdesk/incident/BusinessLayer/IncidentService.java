@@ -40,6 +40,12 @@ public class IncidentService {
 
     @Transactional
     public IncidentResponse resolve(Long id) {
+        return resolve(id, AuditService.SYSTEM);
+    }
+
+    /** Resolves the incident and the tickets linked to it (each change is audited with the actor). */
+    @Transactional
+    public IncidentResponse resolve(Long id, String actor) {
         Incident incident = incidentRepository.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "Incident " + id + " not found"));
@@ -52,12 +58,13 @@ public class IncidentService {
         Instant now = Instant.now();
         incident.setStatus(IncidentStatus.RESOLVED);
         incident.setResolvedAt(now);
+        incident.setActiveKey(null);
         ticketRepository.findByIncidentId(id).forEach(t -> {
             TicketStatus oldStatus = t.getStatus();
             t.setStatus(TicketStatus.RESOLVED);
             t.setResolvedAt(now);
             auditService.record(t.getId(), AuditAction.STATUS_CHANGED, oldStatus, TicketStatus.RESOLVED,
-                    AuditService.SYSTEM, "Resolved together with incident #" + id);
+                    actor, "Resolved together with incident #" + id);
         });
         return incidentMapper.toResponse(incident);
     }

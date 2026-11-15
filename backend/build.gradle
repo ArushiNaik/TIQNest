@@ -35,6 +35,11 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-hateoas'
     implementation 'org.apache.httpcomponents.client5:httpclient5'
 
+    // TiqVision / IT-scope triage: backend-only Claude API client (key read from ANTHROPIC_API_KEY)
+    implementation 'com.anthropic:anthropic-java:3.3.0'
+    // BCrypt password hashing only (no Spring Security auto-configuration)
+    implementation 'org.springframework.security:spring-security-crypto'
+
     // Lombok: only needed while compiling, so it is compileOnly + annotationProcessor
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'

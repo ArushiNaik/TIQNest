@@ -57,6 +57,8 @@ export interface RecommendationResponse {
     approvedRemedyAvailable: boolean;
     message: string;
     recommendations: Remedy[];
+    scopeClassification?: 'IT_SUPPORTED' | 'IT_UNSUPPORTED' | 'SECURITY_RISK' | 'UNCERTAIN' | 'INSUFFICIENT_INFO';
+    clarifyingQuestion?: string;
 }
 
 export interface RemediationAttemptRequest {

@@ -12,5 +12,12 @@ public record RecommendationResponse(
         IssueType detectedIssue,
         boolean approvedRemedyAvailable,
         String message,
-        List<RemedyResponse> recommendations
-) {}
+        List<RemedyResponse> recommendations,
+        String scopeClassification,
+        String clarifyingQuestion
+) {
+    public RecommendationResponse(Long ticketId, String ticketTitle, IssueType detectedIssue,
+                                  boolean approvedRemedyAvailable, String message, List<RemedyResponse> recommendations) {
+        this(ticketId, ticketTitle, detectedIssue, approvedRemedyAvailable, message, recommendations, null, null);
+    }
+}

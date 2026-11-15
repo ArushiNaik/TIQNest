@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type FormEvent } from 'react';
 import { Alert, Badge, Button, Card, Col, Container, Form, Row, Spinner } from 'react-bootstrap';
 import { useNavigate, useSearchParams } from 'react-router-dom';
+import { isNonItError } from '../../services/api-services';
 import { getRecommendations, getTicketForTiqFix } from '../../services/remediation-service';
 import type { IssueType, RecommendationRequest, RecommendationResponse, TiqFixTicket } from '../../types/remediation';
 import { formatLabel } from '../TicketCard';
@@ -10,6 +11,7 @@ import RemediationFeedback from './RemediationFeedback';
 import RemediationHistory from './RemediationHistory';
 import { ISSUE_OPTIONS, REMEDY_ICON, issueOption } from './tiqfix-ui';
 import './TiqFix.css';
+import { ClarifyNotice, NonItNotice, SecurityNotice } from '../vision/ScopeNotices';
 
 function parseTicketId(raw: string | null): number | null | 'invalid' {
     if (raw == null || raw === '') return null;
@@ -35,6 +37,8 @@ export default function TiqFixPage() {
     const [activeIndex, setActiveIndex] = useState(0);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [nonIt, setNonIt] = useState(false);
+    const descriptionRef = useRef<HTMLTextAreaElement>(null);
 
     const [actionTaken, setActionTaken] = useState(false);
     const [historyKey, setHistoryKey] = useState(0);
@@ -46,6 +50,7 @@ export default function TiqFixPage() {
         const seq = ++requestSeq.current;
         setLoading(true);
         setError(null);
+        setNonIt(false);
         setActionTaken(false);
         setActiveIndex(0);
         try {
@@ -56,7 +61,8 @@ export default function TiqFixPage() {
         } catch (err) {
             if (seq !== requestSeq.current) return;
             setResult(null);
-            setError((err as Error).message);
+            if (isNonItError(err)) setNonIt(true);
+            else setError((err as Error).message);
         } finally {
             if (seq === requestSeq.current) setLoading(false);
         }
@@ -81,6 +87,31 @@ export default function TiqFixPage() {
             cancelled = true;
         };
     }, [ticketId, requestRecommendation]);
+
+    useEffect(() => {
+        if (ticketParam != null) return;
+        const issueParam = searchParams.get('issueType');
+        const descParam = (searchParams.get('description') ?? '').slice(0, 2000);
+        const issue = ISSUE_OPTIONS.find((o) => o.type === issueParam)?.type;
+        if (!issue && !descParam) return;
+        if (issue) setSelectedIssue(issue);
+        setDescription(descParam);
+        requestRecommendation({ issueType: issue, description: descParam || undefined });
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    const tryAnotherPrompt = () => {
+        setNonIt(false);
+        setResult(null);
+        setDescription('');
+        setSelectedIssue(null);
+        setTimeout(() => descriptionRef.current?.focus(), 50);
+    };
+
+    const addDetail = (detail: string) => {
+        const text = [description.trim(), detail].filter(Boolean).join('\n');
+        setDescription(text);
+        requestRecommendation({ issueType: selectedIssue ?? undefined, description: text });
+    };
 
     const handleSelectIssue = (type: IssueType) => {
         setSelectedIssue(type);
@@ -192,6 +223,7 @@ export default function TiqFixPage() {
                                             as="textarea"
                                             rows={3}
                                             maxLength={2000}
+                                            ref={descriptionRef}
                                             value={description}
                                             placeholder="e.g. My VPN keeps disconnecting."
                                             onChange={(e) => setDescription(e.target.value)}
@@ -224,6 +256,10 @@ export default function TiqFixPage() {
                             </Card>
                         )}
 
+                        {!loading && nonIt && (
+                            <NonItNotice submittedText={description} onTryAgain={tryAnotherPrompt} />
+                        )}
+
                         {!loading && error && (
                             <Alert variant="danger">
                                 <Alert.Heading className="h6">We couldn’t get a recommendation</Alert.Heading>
@@ -231,7 +267,7 @@ export default function TiqFixPage() {
                             </Alert>
                         )}
 
-                        {!loading && !error && !result && !ticketLoading && !ticketError && (
+                        {!loading && !error && !nonIt && !result && !ticketLoading && !ticketError && (
                             <Card className="shadow-sm tiqfix-empty text-center">
                                 <Card.Body className="py-5">
                                     <div className="display-5 mb-2" aria-hidden="true">🧰</div>
@@ -249,6 +285,13 @@ export default function TiqFixPage() {
                                     {result.approvedRemedyAvailable ? '✨ ' : '🎧 '}
                                     {result.message}
                                 </div>
+
+                                {result.scopeClassification === 'SECURITY_RISK' && (
+                                    <SecurityNotice onCreateTicket={() => setShowEscalation(true)} />
+                                )}
+                                {result.clarifyingQuestion && (
+                                    <ClarifyNotice question={result.clarifyingQuestion} busy={loading} onAnswer={addDetail} />
+                                )}
 
                                 <RemediationCard
                                     remedy={remedy}

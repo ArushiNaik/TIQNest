@@ -6,6 +6,7 @@ import LoginPage from './pages/LoginPage';
 import TicketPage from './pages/TicketPage';
 import UserPage from './pages/UserPage';
 import TiqFixPage from './pages/tiqfix/TiqFixPage';
+import TiqVisionPage from './pages/vision/TiqVisionPage';
 import DashboardPage from './pages/ops/DashboardPage';
 import OutageBanner from './pages/ops/OutageBanner';
 import { getCurrentUser, isAdmin } from './services/auth';
@@ -34,6 +35,7 @@ function AppContent() {
                 <Route path="/home" element={<RequireLogin><HomePage /></RequireLogin>} />
                 <Route path="/tickets" element={<RequireLogin><TicketPage /></RequireLogin>} />
                 <Route path="/fix" element={<RequireLogin><TiqFixPage /></RequireLogin>} />
+                <Route path="/vision" element={<RequireLogin><TiqVisionPage /></RequireLogin>} />
                 <Route path="/dashboard" element={<RequireAdmin><DashboardPage /></RequireAdmin>} />
                 <Route path="/users" element={<RequireAdmin><UserPage /></RequireAdmin>} />
             </Routes>

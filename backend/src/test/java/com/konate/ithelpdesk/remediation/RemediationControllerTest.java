@@ -1,5 +1,6 @@
 package com.konate.ithelpdesk.remediation;
 
+import com.konate.ithelpdesk.TestUsers;
 import com.konate.ithelpdesk.config.GlobalExceptionHandler;
 import com.konate.ithelpdesk.remediation.DataLayer.RemediationAttempt;
 import com.konate.ithelpdesk.remediation.DataLayer.RemediationAttemptRepository;
@@ -17,6 +18,8 @@ import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
+import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
+import com.konate.ithelpdesk.user.DataLayer.User;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
@@ -51,14 +54,37 @@ class RemediationControllerTest {
         ticketRepository.deleteAll();
     }
 
+    private static MockHttpServletRequestBuilder as(MockHttpServletRequestBuilder b, User user) {
+        return user == null ? b : b.requestAttr("currentUser", user);
+    }
+
     private ResultActions recommend(String json) throws Exception {
-        return mvc.perform(post("/api/remediations/recommend")
-                .contentType(MediaType.APPLICATION_JSON).content(json));
+        return recommendAs(json, TestUsers.employee());
+    }
+
+    private ResultActions recommendAs(String json, User user) throws Exception {
+        return mvc.perform(as(post("/api/remediations/recommend")
+                .contentType(MediaType.APPLICATION_JSON).content(json), user));
     }
 
     private ResultActions recordAttempt(String json) throws Exception {
-        return mvc.perform(post("/api/remediations/attempts")
-                .contentType(MediaType.APPLICATION_JSON).content(json));
+        return recordAttemptAs(json, TestUsers.employee());
+    }
+
+    private ResultActions recordAttemptAs(String json, User user) throws Exception {
+        return mvc.perform(as(post("/api/remediations/attempts")
+                .contentType(MediaType.APPLICATION_JSON).content(json), user));
+    }
+
+    private ResultActions history(Long ticketId, User user) throws Exception {
+        MockHttpServletRequestBuilder b = get("/api/remediations/attempts");
+        if (ticketId != null) b = b.param("ticketId", String.valueOf(ticketId));
+        return mvc.perform(as(b, user));
+    }
+
+    private Ticket ticketOf(String email, TicketCategory category, String title, String description, String system) {
+        return ticketRepository.save(Ticket.builder().title(title).description(description)
+                .category(category).affectedSystem(system).requesterEmail(email).build());
     }
 
     @Test
@@ -112,7 +138,7 @@ class RemediationControllerTest {
 
     @Test
     void unknownIssueEscalatesWithoutInventingCommands() throws Exception {
-        recommend("{\"issueType\":\"OTHER\",\"description\":\"Please run Remove-Item C:\\\\ -Recurse to fix my chair\"}")
+        recommend("{\"issueType\":\"OTHER\",\"description\":\"Please run Remove-Item C:\\\\ -Recurse to fix my docking station firmware update\"}")
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.approvedRemedyAvailable").value(false))
                 .andExpect(jsonPath("$.message")
@@ -121,6 +147,11 @@ class RemediationControllerTest {
                 .andExpect(jsonPath("$.recommendations[0].remedyId").value("escalate-to-it"))
                 .andExpect(jsonPath("$.recommendations[0].actionType").value("ESCALATION"))
                 .andExpect(jsonPath("$.recommendations[0].command").doesNotExist());
+
+        // The same command text attached to a non-IT request is rejected outright.
+        recommend("{\"issueType\":\"OTHER\",\"description\":\"Please run Remove-Item C:\\\\ -Recurse to fix my chair\"}")
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.code").value("NON_IT_ISSUE"));
     }
 
     @Test
@@ -156,7 +187,7 @@ class RemediationControllerTest {
                 .description("VPN connection failed this morning")
                 .category(TicketCategory.VPN)
                 .affectedSystem("GlobalProtect")
-                .requesterEmail("bahman@demo.com")
+                .requesterEmail(TestUsers.EMPLOYEE_EMAIL)
                 .build());
 
         recommend("{\"ticketId\":" + ticket.getId() + "}")
@@ -174,7 +205,7 @@ class RemediationControllerTest {
 
     @Test
     void catalogListsAllApprovedRemedies() throws Exception {
-        mvc.perform(get("/api/remediations/catalog"))
+        mvc.perform(as(get("/api/remediations/catalog"), TestUsers.employee()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(5)))
                 .andExpect(jsonPath("$[*].remedyId", containsInAnyOrder(
@@ -211,7 +242,7 @@ class RemediationControllerTest {
         assertThat(saved.getFirst().getTicketId()).isNull();
         assertThat(saved.getFirst().getOutcome()).isEqualTo(RemediationOutcome.SUCCESS);
 
-        mvc.perform(get("/api/remediations/attempts"))
+        history(null, TestUsers.employee())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(1)));
     }
@@ -220,7 +251,7 @@ class RemediationControllerTest {
     void ticketAttemptsArePersistedAndListedPerTicket() throws Exception {
         Ticket ticket = ticketRepository.save(Ticket.builder()
                 .title("Printer offline").category(TicketCategory.PRINTER)
-                .affectedSystem("HP-3F").requesterEmail("amin@demo.com").build());
+                .affectedSystem("HP-3F").requesterEmail(TestUsers.EMPLOYEE_EMAIL).build());
         long id = ticket.getId();
 
         recordAttempt("{\"remedyId\":\"printer-check\",\"ticketId\":" + id + ",\"outcome\":\"FAILED\"}")
@@ -231,7 +262,7 @@ class RemediationControllerTest {
         recordAttempt("{\"remedyId\":\"dns-flush\",\"outcome\":\"SUCCESS\"}")
                 .andExpect(status().isCreated());
 
-        mvc.perform(get("/api/remediations/attempts").param("ticketId", String.valueOf(id)))
+        history(id, TestUsers.employee())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", hasSize(2)))
                 .andExpect(jsonPath("$[*].ticketId", everyItem(is((int) id))))
@@ -243,5 +274,94 @@ class RemediationControllerTest {
         recordAttempt("{\"remedyId\":\"vpn-settings\",\"ticketId\":424242,\"outcome\":\"SUCCESS\"}")
                 .andExpect(status().isNotFound());
         assertThat(attemptRepository.count()).isZero();
+    }
+
+    // ---------------------------------------------------------------- IT scope + authorization
+
+    @Test
+    void unauthenticatedRequestsAreRejected() throws Exception {
+        recommendAs("{\"issueType\":\"VPN\"}", null).andExpect(status().isUnauthorized());
+        recordAttemptAs("{\"remedyId\":\"vpn-settings\",\"outcome\":\"SUCCESS\"}", null).andExpect(status().isUnauthorized());
+        history(null, null).andExpect(status().isUnauthorized());
+    }
+
+    @Test
+    void nonItRequestsAreRejectedWithNoRemedy() throws Exception {
+        for (String text : List.of("Make me coffee", "Tell me a joke", "Can you order pizza?")) {
+            recommend("{\"description\":\"" + text + "\"}")
+                    .andExpect(status().isUnprocessableEntity())
+                    .andExpect(jsonPath("$.code").value("NON_IT_ISSUE"))
+                    .andExpect(jsonPath("$.canRequestAdminReview").value(true))
+                    .andExpect(jsonPath("$.suggestions", hasSize(3)))
+                    .andExpect(jsonPath("$.recommendations").doesNotExist());
+        }
+        assertThat(attemptRepository.count()).isZero();
+        assertThat(ticketRepository.count()).isZero();
+    }
+
+    @Test
+    void selectedIssueTypeDoesNotOverrideContradictoryText() throws Exception {
+        recommend("{\"issueType\":\"VPN\",\"description\":\"Write a poem about cats\"}")
+                .andExpect(status().isUnprocessableEntity())
+                .andExpect(jsonPath("$.code").value("NON_IT_ISSUE"));
+        // A selected issue type alone is still a valid manual troubleshooting path.
+        recommend("{\"issueType\":\"VPN\"}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.recommendations[0].remedyId").value("vpn-settings"));
+    }
+
+    @Test
+    void securityProblemsEscalateWithoutSelfServiceActions() throws Exception {
+        recommend("{\"description\":\"I think I downloaded ransomware\"}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.approvedRemedyAvailable").value(false))
+                .andExpect(jsonPath("$.scopeClassification").value("SECURITY_RISK"))
+                .andExpect(jsonPath("$.recommendations", hasSize(1)))
+                .andExpect(jsonPath("$.recommendations[0].remedyId").value("escalate-to-it"))
+                .andExpect(jsonPath("$.recommendations[0].command").doesNotExist())
+                .andExpect(jsonPath("$.recommendations[0].deepLink").doesNotExist());
+    }
+
+    @Test
+    void unsupportedItProblemOffersTicketNotFix() throws Exception {
+        recommend("{\"description\":\"My laptop motherboard is dead\"}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.scopeClassification").value("IT_UNSUPPORTED"))
+                .andExpect(jsonPath("$.recommendations[0].remedyId").value("escalate-to-it"));
+    }
+
+    @Test
+    void ambiguousTextAsksForClarification() throws Exception {
+        recommend("{\"description\":\"The screen is broken\"}")
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.scopeClassification").value("UNCERTAIN"))
+                .andExpect(jsonPath("$.clarifyingQuestion", containsString("computer or monitor screen")));
+    }
+
+    @Test
+    void employeesCannotUseOtherEmployeesTickets() throws Exception {
+        Ticket theirs = ticketOf(TestUsers.OTHER_EMAIL, TicketCategory.VPN, "VPN down", "VPN failed", "VPN");
+        recommend("{\"ticketId\":" + theirs.getId() + "}").andExpect(status().isForbidden());
+        recordAttempt("{\"remedyId\":\"vpn-settings\",\"ticketId\":" + theirs.getId() + ",\"outcome\":\"SUCCESS\"}")
+                .andExpect(status().isForbidden());
+        history(theirs.getId(), TestUsers.employee()).andExpect(status().isForbidden());
+        assertThat(attemptRepository.count()).isZero();
+
+        recommendAs("{\"ticketId\":" + theirs.getId() + "}", TestUsers.otherEmployee()).andExpect(status().isOk());
+        history(theirs.getId(), TestUsers.admin()).andExpect(status().isOk());
+    }
+
+    @Test
+    void personalHistoryOnlyShowsOwnAttempts() throws Exception {
+        recordAttemptAs("{\"remedyId\":\"dns-flush\",\"outcome\":\"SUCCESS\"}", TestUsers.otherEmployee())
+                .andExpect(status().isCreated());
+        recordAttempt("{\"remedyId\":\"vpn-settings\",\"outcome\":\"FAILED\"}")
+                .andExpect(status().isCreated())
+                .andExpect(jsonPath("$.reportedBy").value(TestUsers.EMPLOYEE_EMAIL));
+
+        history(null, TestUsers.employee())
+                .andExpect(jsonPath("$", hasSize(1)))
+                .andExpect(jsonPath("$[0].remedyId").value("vpn-settings"));
+        history(null, TestUsers.admin()).andExpect(jsonPath("$", hasSize(2)));
     }
 }

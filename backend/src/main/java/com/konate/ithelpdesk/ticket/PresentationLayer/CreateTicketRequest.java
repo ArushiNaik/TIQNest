@@ -12,6 +12,6 @@ public record CreateTicketRequest(
         @Size(max = 2000) String description,
         @NotNull TicketCategory category,
         @NotBlank @Size(max = 100) String affectedSystem,
-        @NotBlank @Email String requesterEmail,
+        @Email @Size(max = 255) String requesterEmail,   // ignored for employees: the signed-in user is used
         TicketPriority priority
 ) {}

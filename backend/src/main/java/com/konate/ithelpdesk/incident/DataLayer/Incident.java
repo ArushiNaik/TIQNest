@@ -47,6 +47,13 @@ public class Incident {
     @Column(name = "resolved_at")
     private Instant resolvedAt;
 
+    /**
+     * "CATEGORY|NORMALIZED_SYSTEM" while ACTIVE, null once resolved. The unique constraint makes it
+     * impossible to store two active incidents for the same outage (NULLs are not compared).
+     */
+    @Column(name = "active_key", unique = true, length = 160)
+    private String activeKey;
+
     @PrePersist
     void onCreate() {
         if (detectedAt == null) detectedAt = Instant.now();
