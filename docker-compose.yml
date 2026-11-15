@@ -20,6 +20,9 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-ItHelpDesk}
       SPRING_DATASOURCE_USERNAME: ${POSTGRES_USER:-user}
       SPRING_DATASOURCE_PASSWORD: ${POSTGRES_PASSWORD:-pwd}
+      # TiqVision AI (optional). Leave empty to run without screenshot analysis.
+      ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-}
+      ANTHROPIC_MODEL: ${ANTHROPIC_MODEL:-claude-opus-5-5}
     depends_on:
       db:
         condition: service_healthy

@@ -12,4 +12,6 @@ public interface IncidentRepository extends JpaRepository<Incident, Long> {
             TicketCategory category, String affectedSystem, IncidentStatus status);
 
     List<Incident> findByStatusOrderByDetectedAtDesc(IncidentStatus status);
+
+    Optional<Incident> findByActiveKey(String activeKey);
 }

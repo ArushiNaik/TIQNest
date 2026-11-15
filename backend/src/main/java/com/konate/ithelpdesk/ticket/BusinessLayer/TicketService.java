@@ -2,6 +2,7 @@ package com.konate.ithelpdesk.ticket.BusinessLayer;
 
 import com.konate.ithelpdesk.audit.BusinessLayer.AuditService;
 import com.konate.ithelpdesk.audit.DataLayer.AuditAction;
+import com.konate.ithelpdesk.config.NonITIssueException;
 import com.konate.ithelpdesk.incident.BusinessLayer.OutageRadarService;
 import com.konate.ithelpdesk.sla.SlaPolicy;
 import com.konate.ithelpdesk.ticket.DataTier.Ticket;
@@ -12,6 +13,11 @@ import com.konate.ithelpdesk.ticket.Mapper.TicketMapper;
 import com.konate.ithelpdesk.ticket.PresentationLayer.CreateTicketRequest;
 import com.konate.ithelpdesk.ticket.PresentationLayer.TicketResponse;
 import com.konate.ithelpdesk.ticket.PresentationLayer.UpdateTicketRequest;
+import com.konate.ithelpdesk.triage.BusinessLayer.AiScopeClassifier;
+import com.konate.ithelpdesk.triage.BusinessLayer.ScopeClassification;
+import com.konate.ithelpdesk.triage.BusinessLayer.ScopeResult;
+import com.konate.ithelpdesk.user.DataLayer.User;
+import com.konate.ithelpdesk.user.config.AccessControl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -33,10 +39,38 @@ public class TicketService {
     private final OutageRadarService outageRadarService;
     private final SlaPolicy slaPolicy;
     private final AuditService auditService;
+    private final AiScopeClassifier scopeClassifier;
 
     @Value("${outage-radar.window-minutes:5}")
     private long windowMinutes;
 
+    /**
+     * Creates a ticket for the signed-in user. Employees always file tickets as themselves and
+     * pass the IT-scope gate (non-IT submissions are rejected and never reach the outage radar).
+     * Admins may file on behalf of someone else (used by the outage simulator).
+     */
+    @Transactional
+    public TicketResponse create(CreateTicketRequest req, User currentUser) {
+        AccessControl.requireUser(currentUser);
+        boolean admin = AccessControl.isAdmin(currentUser);
+        String requester = admin && req.requesterEmail() != null && !req.requesterEmail().isBlank()
+                ? req.requesterEmail().trim() : currentUser.getEmail();
+
+        TicketPriority priority = req.priority();
+        if (!admin) {
+            ScopeResult scope = scopeClassifier.classifyForGate(
+                    req.title() + " " + (req.description() == null ? "" : req.description()));
+            if (scope.classification() == ScopeClassification.NON_IT) throw new NonITIssueException();
+            if (scope.classification() == ScopeClassification.SECURITY_RISK
+                    && (priority == null || priority.ordinal() < TicketPriority.HIGH.ordinal())) {
+                priority = TicketPriority.HIGH;
+            }
+        }
+        return create(new CreateTicketRequest(req.title(), req.description(), req.category(),
+                req.affectedSystem(), requester, priority));
+    }
+
+    /** Internal creation path (already authorized). */
     @Transactional
     public TicketResponse create(CreateTicketRequest req) {
         Ticket ticket = ticketMapper.toEntity(req);
@@ -64,9 +98,10 @@ public class TicketService {
     }
 
     @Transactional
-    public TicketResponse update(Long id, UpdateTicketRequest req) {
+    public TicketResponse update(Long id, UpdateTicketRequest req, User currentUser) {
+        AccessControl.requireAdmin(currentUser);
         Ticket ticket = getTicket(id);
-        String actor = req.actor();
+        String actor = currentUser.getEmail();
 
         if (req.status() != null && req.status() != ticket.getStatus()) {
             if (req.status() == TicketStatus.LINKED_TO_INCIDENT) {
@@ -111,6 +146,15 @@ public class TicketService {
         return ticketMapper.toResponseList(ticketRepository.findAllByOrderByCreatedAtDesc());
     }
 
+    /** Admins see every ticket; employees only their own. */
+    @Transactional(readOnly = true)
+    public List<TicketResponse> findAllFor(User currentUser) {
+        AccessControl.requireUser(currentUser);
+        if (AccessControl.isAdmin(currentUser)) return findAll();
+        return ticketMapper.toResponseList(
+                ticketRepository.findByRequesterEmailIgnoreCaseOrderByCreatedAtDesc(currentUser.getEmail()));
+    }
+
     @Transactional(readOnly = true)
     public List<TicketResponse> findQueue() {
         return ticketMapper.toResponseList(ticketRepository.findByStatusInOrderByCreatedAtDesc(
@@ -120,6 +164,15 @@ public class TicketService {
     @Transactional(readOnly = true)
     public TicketResponse findById(Long id) {
         return ticketMapper.toResponse(getTicket(id));
+    }
+
+    /** 404 if the ticket does not exist, 403 if it belongs to someone else (admins see all). */
+    @Transactional(readOnly = true)
+    public TicketResponse findByIdFor(Long id, User currentUser) {
+        AccessControl.requireUser(currentUser);
+        Ticket ticket = getTicket(id);
+        AccessControl.requireOwnerOrAdmin(currentUser, ticket.getRequesterEmail());
+        return ticketMapper.toResponse(ticket);
     }
 
     private Ticket getTicket(Long id) {

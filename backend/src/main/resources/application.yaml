@@ -13,8 +13,9 @@ spring:
     show-sql: true
     open-in-view: false
     hibernate:
-      # Hibernate creates and updates the tables from the entities
-      ddl-auto: create
+      # "update" keeps tickets, incidents and feedback across restarts.
+      # Set JPA_DDL_AUTO=create to deliberately wipe and rebuild the schema.
+      ddl-auto: ${JPA_DDL_AUTO:update}
     # Run data.sql only after Hibernate has created the tables
     defer-datasource-initialization: true
 
@@ -31,10 +32,31 @@ spring:
     compose:
       lifecycle-management: start-only   # leave the containers running when the app stops
 
+  servlet:
+    multipart:
+      max-file-size: 4MB
+      max-request-size: 12MB
+
 server:
   port: 8080
   error:
     include-message: always
+
+# TiqVision / IT-scope triage. The key is read from the environment on the server only.
+tiqnest:
+  ai:
+    api-key: ${ANTHROPIC_API_KEY:}
+    model: ${ANTHROPIC_MODEL:claude-opus-5-5}
+    timeout-seconds: ${ANTHROPIC_TIMEOUT_SECONDS:45}
+    max-retries: 2
+    max-tokens: 8000
+  triage:
+    max-files: 4
+    max-file-bytes: 3670016      # 3.5 MB per image
+    max-total-bytes: 10485760    # 10 MB per request
+    max-requests-per-minute: 12
+    # Explicitly labelled presentation fixtures (never presented as real analysis)
+    demo-fixtures-enabled: ${TIQNEST_DEMO_FIXTURES:false}
 
 outage-radar:
   threshold: 3
@@ -52,7 +74,8 @@ logging:
     root: INFO
     com.konate: DEBUG
     org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE   # shows the values sent with each SQL query
+    # TRACE prints every SQL parameter (passwords, ticket text). Opt in with SQL_BIND_LOG_LEVEL=TRACE.
+    org.hibernate.orm.jdbc.bind: ${SQL_BIND_LOG_LEVEL:INFO}
 
 ---
 # Docker profile: used when the app runs inside docker-compose
@@ -91,3 +114,8 @@ spring:
   sql:
     init:
       mode: never
+
+# Tests never call the real AI provider, even if ANTHROPIC_API_KEY is set
+tiqnest:
+  ai:
+    api-key: ""

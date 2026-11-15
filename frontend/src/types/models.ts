@@ -100,4 +100,7 @@ export interface ApiError {
     status: number;
     message?: string;
     fieldErrors?: Record<string, string>;
+    code?: string;
+    suggestions?: string[];
+    canRequestAdminReview?: boolean;
 }

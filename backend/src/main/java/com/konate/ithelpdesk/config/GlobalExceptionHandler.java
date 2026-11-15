@@ -10,6 +10,9 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
+import org.springframework.web.multipart.MultipartException;
+import org.springframework.web.multipart.support.MissingServletRequestPartException;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
@@ -21,6 +24,26 @@ import java.util.Map;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(CodedApiException.class)
+    public ResponseEntity<ApiError> handleCoded(CodedApiException ex, HttpServletRequest req) {
+        HttpStatus status = ex.getStatus();
+        ApiError body = new ApiError(Instant.now(), status.value(), status.getReasonPhrase(), ex.getMessage(),
+                req.getRequestURI(), null, ex.getCode(), ex.getSuggestions(), ex.getCanRequestAdminReview());
+        return ResponseEntity.status(status).body(body);
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ApiError> handleUploadTooLarge(MaxUploadSizeExceededException ex, HttpServletRequest req) {
+        return handleCoded(new CodedApiException(HttpStatus.CONTENT_TOO_LARGE, "UPLOAD_TOO_LARGE",
+                "The upload is too large. Each screenshot must be under 3.5 MB."), req);
+    }
+
+    @ExceptionHandler({MissingServletRequestPartException.class, MultipartException.class})
+    public ResponseEntity<ApiError> handleBadMultipart(Exception ex, HttpServletRequest req) {
+        return handleCoded(new CodedApiException(HttpStatus.BAD_REQUEST, "BLANK_UPLOAD",
+                "Please attach at least one screenshot (PNG, JPEG or WebP)."), req);
+    }
 
     @ExceptionHandler(ResponseStatusException.class)
     public ResponseEntity<ApiError> handleResponseStatus(ResponseStatusException ex, HttpServletRequest req) {

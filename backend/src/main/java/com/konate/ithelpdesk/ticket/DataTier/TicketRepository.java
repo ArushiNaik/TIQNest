@@ -19,4 +19,8 @@ public interface TicketRepository extends JpaRepository<Ticket, Long> {
     List<Ticket> findByStatusInOrderByCreatedAtDesc(List<TicketStatus> statuses);
 
     List<Ticket> findByIncidentId(Long incidentId);
+
+    List<Ticket> findByRequesterEmailIgnoreCaseOrderByCreatedAtDesc(String requesterEmail);
+
+    List<Ticket> findByCategoryAndCreatedAtAfterOrderByCreatedAtAsc(TicketCategory category, Instant since);
 }
