@@ -285,6 +285,8 @@ Potential next steps include stronger production account management, broader end
 
 Built at Hackathon Concordia to reimagine everyday IT support.
 
+Explore more web, backend, mobile and game projects in [Arushi Naik’s portfolio](https://github.com/ArushiNaik).
+
 ---
 
 <div align="center">
