@@ -34,7 +34,7 @@ TIQNest is a help desk with two smart layers on top of normal tickets:
 - Merging four people's work in one day.
 
 ## Accomplishments that we're proud of
-A full working flow end to end: log in, report, watch an outage get detected live, fix a common problem without IT, and see every action in the history.
+A full working flow end to end: log in, report, watch an outage get detected live, fix a common problem without waiting on IT, and see every action in the history.
 
 ## What we learned
 Layered Spring Boot architecture, JPA relationships, React with TypeScript, Docker Compose, Git branching and PR reviews as a team, and how to use AI coding assistants critically.

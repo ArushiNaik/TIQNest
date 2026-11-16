@@ -1,11 +1,8 @@
 <div align="center">
 
-# TIQNEST ✳
-### IT support that just works.
+# TIQNest ✳
 
-**Report it. Work through it. Get back to your day.**
-
-A connected help desk for employees and the IT teams behind them.
+A help desk that groups duplicate reports into one incident, so IT staff handle an outage once instead of once per report.
 
 [**Explore the live website ↗**](https://tiqnest.netlify.app/) · [**Try the demo ↗**](https://tiqnest.netlify.app/login)
 
@@ -21,9 +18,9 @@ A connected help desk for employees and the IT teams behind them.
 
 ---
 
-## Start here: recruiter demo
+## Try the demo
 
-Open **[tiqnest.netlify.app/login](https://tiqnest.netlify.app/login)** and use a demo account below. No signup is required.
+Open **[tiqnest.netlify.app/login](https://tiqnest.netlify.app/login)** and sign in with one of these accounts. No signup is required.
 
 | Experience | Email | Password |
 |---|---|---|
@@ -31,43 +28,44 @@ Open **[tiqnest.netlify.app/login](https://tiqnest.netlify.app/login)** and use 
 | **Employee** | `Bahman@demo.com` | `pwd` |
 | **Employee — second perspective** | `Amin@demo.com` | `pwd` |
 
-These are intentionally public demo credentials, defined in [`backend/src/main/resources/data.sql`](backend/src/main/resources/data.sql). They are for exploring the project with fictional data, not personal or sensitive information. The hosted database may change as visitors try the app; the account values above are verified against the seed file rather than a fresh live login.
+These accounts are public on purpose and are seeded from [`backend/src/main/resources/data.sql`](backend/src/main/resources/data.sql). The demo uses fictional data, and other visitors can change it.
 
 ### A quick tour
 
-1. **Meet the product.** Visit the [public homepage](https://tiqnest.netlify.app/) for the features, workflow and team story.
-2. **Try the employee experience.** Sign in as Bahman or Amin. Report a sample IT issue and follow its status on the Tickets page.
-3. **Explore TiqFix.** Review guided troubleshooting for common problems. You remain in control of the steps you take.
-4. **Switch perspectives.** Sign out, then sign in as Christine to explore the admin dashboard, ticket queue, priorities, incidents and user management.
-5. **Follow the bigger picture.** Review the outage banner and incident tools when related reports have formed an active incident.
+1. **Read the overview.** The [public site](https://tiqnest.netlify.app/) has a short landing page, plus Features, How it works and About pages.
+2. **Report a problem as an employee.** Sign in as Bahman or Amin, report an issue and follow it on the TiqRadar page.
+3. **Try TiqFix.** Pick a common problem and walk through its reviewed fix. Nothing runs on your computer without you.
+4. **Switch to the admin.** Sign in as Christine to see the dashboard, incidents, ticket deadlines and user management.
+5. **Trigger an incident.** When three employees report the same system within five minutes, TiqRadar groups them into one incident and shows an outage banner.
 
-If the backend is sleeping, the first request may take longer. Allow it time to wake up, then retry if necessary.
+If the backend has been idle, the first request can be slow while it wakes up. Wait a moment and try again.
 
 ---
 
-## Big ideas. Better IT days.
+## Why TIQNest
 
-IT problems interrupt work. Support requests get scattered across messages, employees repeat the same reports, and teams lose sight of which problems affect everyone.
+When something breaks at work, many people report it at once. Whether IT is one person at a small business or a full team at a large company, they end up sorting fifteen tickets that describe the same outage.
 
-**Tiqnest brings ticket tracking, guided troubleshooting and incident detection into one connected platform.** Employees get a clear place to ask for help; administrators get a shared view of the work that needs attention.
+TIQNest groups those reports into one incident, tells everyone it's known, and gives each ticket a deadline based on its priority. It's a tool for IT staff, not a replacement for them: employees can try fixes IT has reviewed, and everything else goes to IT.
 
-Created as a hackathon project at Concordia, Tiqnest connects a React interface to a Java REST API and a persistent PostgreSQL database.
+Built at HackDécouverte Concordia with a React frontend, a Java REST API and a PostgreSQL database.
 
 ## What you can explore
 
 | Capability | What it does |
 |---|---|
-| **Smart ticket management** | Create support requests and follow status, priority, assignment and progress. |
+| **Tickets** | Create support requests and follow status, priority, assignment and progress. |
 | **TiqFix — guided troubleshooting** | Explore IT-approved steps for issues such as VPN disconnections, printers, browser cache and connectivity. Commands do not run silently, and completing steps does not automatically prove a repair succeeded. |
-| **TiqRadar — incident detection** | Group related reports into shared incidents, surface active outages in a banner and give administrators a view of affected reports. |
+| **TiqRadar — incident detection** | Three reports with the same category and affected system within five minutes open one incident. Later reports join it, an outage banner tells everyone, and resolving the incident resolves every linked ticket. |
 | **SLA visibility** | Show deadlines and whether tickets are on track, at risk or breached. Default targets are 1 hour for critical, 4 for high, 24 for medium and 72 for low priority. |
 | **Audit history** | Follow recorded ticket changes through a history timeline. |
 | **Admin dashboard** | Review incidents, ticket priorities, assignments and SLA summaries. |
 | **Role-based access** | Distinct employee and administrator experiences, with protected application routes and backend authentication. |
 | **TiqVision — prototype** | Upload an error screenshot for AI analysis, recommended troubleshooting and an automatically populated ticket draft. Review or edit the draft, then submit it to create the ticket. The public demo currently reports AI analysis as unconfigured; the workflow requires server-side provider credentials. Explicit demo fixtures are labeled as demo results. |
-| **Public landing page** | Responsive product overview, mobile navigation, illustrative ticket cards, team credits and role-aware calls to action. |
+| **Home page** | Shows the most urgent open ticket you can see, with a countdown to its deadline. |
+| **Public pages** | A short landing page, plus Features, How it works and About pages. |
 
-The interface uses sage green, cream and pink accents, bold typography, glass-style cards, visible keyboard focus and reduced-motion support. The authenticated homepage also has a dismissible ticket illustration.
+Each feature has one icon, used everywhere (Bootstrap Icons), and TIQNest has its own logo. The interface uses glass-style cards and subtle motion, with visible keyboard focus and support for the reduced-motion setting.
 
 ## TiqVision: screenshot → recommended fix → ticket
 
@@ -141,16 +139,17 @@ See [`docs/deployment.md`](docs/deployment.md) for the deployment walkthrough an
 
 | Route | Page | Access |
 |---|---|---|
-| `/` | Public landing page | Everyone |
+| `/` | Landing page | Everyone |
+| `/features`, `/how-it-works`, `/about` | Public detail pages | Everyone |
 | `/login` | Sign in | Everyone |
-| `/home` | Authenticated homepage | Signed-in users |
-| `/tickets` | Tickets | Signed-in users |
+| `/home` | Home page | Signed-in users |
+| `/tickets` | TiqRadar (tickets and incidents) | Signed-in users |
 | `/fix` | TiqFix | Signed-in users |
 | `/vision` | TiqVision | Signed-in users |
 | `/dashboard` | Admin dashboard | Administrators |
 | `/users` | User management | Administrators |
 
-Successful login opens `/home`. Landing-page calls to action send returning employees to `/home` and administrators to `/dashboard`. The public landing and login pages do not show the authenticated navbar or outage banner.
+Signing in opens `/home`. For users who are already signed in, the public pages link employees to `/home` and administrators to `/dashboard`. The public pages and the login page don't show the app's navbar or outage banner.
 
 ## Run locally
 
@@ -226,9 +225,6 @@ To preview the production frontend build:
 ```bash
 npm --prefix frontend run preview
 ```
-
-Frontend builds and focused browser checks were completed for the landing-page and dismiss-button changes. These checks do not substitute for a full live backend integration test.
-
 ## API overview
 
 Application endpoints require `Authorization: Bearer <token>`, except login. Role and ownership rules apply to protected operations.
@@ -265,7 +261,14 @@ curl -X POST http://localhost:8080/api/auth/login \
 TIQNest/
 ├── frontend/
 │   └── src/
-│       ├── pages/          Landing, login, tickets, TiqFix, TiqVision, operations
+│       ├── pages/
+│       │   ├── landing/    Landing page; public/ holds Features, How it works, About
+│       │   ├── tiqradar/   Tickets, ticket card and form, outage banner
+│       │   ├── tiqfix/     Guided fixes
+│       │   ├── tiqvision/  Screenshot triage
+│       │   ├── dashboard/  Admin dashboard, SLA badge, ticket history
+│       │   └── home/, login/, users/
+│       ├── brand.tsx       TIQNest logo and the icon for each feature
 │       ├── services/       API configuration and session helpers
 │       ├── types/          Shared frontend models
 │       └── App.tsx         Public routes and access guards
@@ -285,15 +288,15 @@ Backend features are organized around users, tickets, incidents, SLA, audit hist
 
 ## Project scope and next steps
 
-Tiqnest is a hackathon portfolio project with a public demo. Shared test data can change, and the demo accounts are intentionally discoverable. TiqVision remains labeled as a prototype: the public Render API currently reports `aiConfigured: false`. Live screenshot analysis must be enabled and verified before it can be advertised as available on the hosted demo.
+TIQNest is a hackathon project with a public demo, not a production service. Passwords are hashed with BCrypt (the plain-text seed passwords are upgraded on first login), but sessions live in server memory, so restarting the backend signs everyone out. TiqVision's AI analysis is off on the hosted demo.
 
-Potential next steps include stronger production account management, broader end-to-end coverage, validated screenshot triage and continued accessibility testing.
+Next steps: persistent, expiring sessions, end-to-end tests, and validating screenshot triage before turning it on.
 
-## The people behind Tiqnest
+## The people behind TIQNest
 
 **Ilian Adeleke · Arushi Naik · Malick Konate · Jacky Bolap**
 
-Built at Hackathon Concordia to reimagine everyday IT support.
+Built at HackDécouverte Concordia.
 
 Explore more web, backend, mobile and game projects in [Arushi Naik’s portfolio](https://github.com/ArushiNaik).
 
@@ -301,8 +304,6 @@ Explore more web, backend, mobile and game projects in [Arushi Naik’s portfoli
 
 <div align="center">
 
-**Less confusion. Faster troubleshooting. Better visibility.**
-
-[**Take Tiqnest for a spin ↗**](https://tiqnest.netlify.app/login)
+[**Try the demo ↗**](https://tiqnest.netlify.app/login)
 
 </div>
