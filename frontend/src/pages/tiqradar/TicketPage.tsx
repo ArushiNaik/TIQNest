@@ -1,11 +1,11 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Container } from 'react-bootstrap';
-import { ApiRequestError, getData, postData } from '../services/api-services';
-import { getCurrentUser, isAdmin } from '../services/auth';
-import { API_URL_TICKETS, API_URL_USERS } from '../services/config';
-import { OPS_REFRESH_EVENT, notifyOpsChanged } from '../services/ops-service';
-import type { CreateTicketRequest, Ticket, User } from '../types/models';
-import TicketDetailsModal from './ops/TicketDetailsModal';
+import { ApiRequestError, getData, postData } from '../../services/api-services';
+import { getCurrentUser, isAdmin } from '../../services/auth';
+import { API_URL_TICKETS, API_URL_USERS } from '../../services/config';
+import { OPS_REFRESH_EVENT, notifyOpsChanged } from '../../services/ops-service';
+import type { CreateTicketRequest, Ticket, User } from '../../types/models';
+import TicketDetailsModal from '../dashboard/TicketDetailsModal';
 import TicketForm from './TicketForm';
 import TicketList from './TicketList';
 

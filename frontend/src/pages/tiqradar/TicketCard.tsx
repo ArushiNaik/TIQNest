@@ -1,7 +1,7 @@
 import { Badge, Button, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
-import type { Ticket, TicketPriority, TicketStatus } from '../types/models';
-import SlaBadge from './ops/SlaBadge';
+import type { Ticket, TicketPriority, TicketStatus } from '../../types/models';
+import SlaBadge from '../dashboard/SlaBadge';
 
 const statusVariant: Record<TicketStatus, string> = {
     OPEN: 'primary',

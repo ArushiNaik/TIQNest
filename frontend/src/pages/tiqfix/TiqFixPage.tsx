@@ -4,14 +4,14 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { isNonItError } from '../../services/api-services';
 import { getRecommendations, getTicketForTiqFix } from '../../services/remediation-service';
 import type { IssueType, RecommendationRequest, RecommendationResponse, TiqFixTicket } from '../../types/remediation';
-import { formatLabel } from '../TicketCard';
+import { formatLabel } from '../tiqradar/TicketCard';
 import EscalationModal from './EscalationModal';
 import RemediationCard from './RemediationCard';
 import RemediationFeedback from './RemediationFeedback';
 import RemediationHistory from './RemediationHistory';
 import { ISSUE_OPTIONS, REMEDY_ICON, issueOption } from './tiqfix-ui';
 import './TiqFix.css';
-import { ClarifyNotice, NonItNotice, SecurityNotice } from '../vision/ScopeNotices';
+import { ClarifyNotice, NonItNotice, SecurityNotice } from '../tiqvision/ScopeNotices';
 
 function parseTicketId(raw: string | null): number | null | 'invalid' {
     if (raw == null || raw === '') return null;

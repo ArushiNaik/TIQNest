@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getCurrentUser, isAdmin } from '../services/auth';
+import { getCurrentUser, isAdmin } from '../../services/auth';
 import './LandingPage.css';
 
 const features = [

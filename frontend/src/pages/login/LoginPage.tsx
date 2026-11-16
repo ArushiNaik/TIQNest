@@ -1,9 +1,9 @@
 import { useState, type FormEvent } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ApiRequestError, postData } from '../services/api-services';
-import { saveSession } from '../services/auth';
-import { API_URL_LOGIN } from '../services/config';
-import type { LoginResponse } from '../types/models';
+import { ApiRequestError, postData } from '../../services/api-services';
+import { saveSession } from '../../services/auth';
+import { API_URL_LOGIN } from '../../services/config';
+import type { LoginResponse } from '../../types/models';
 import './LoginPage.css';
 
 export default function LoginPage() {

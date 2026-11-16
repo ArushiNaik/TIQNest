@@ -1,5 +1,5 @@
 import { Badge, Table } from 'react-bootstrap';
-import type { User } from '../types/models';
+import type { User } from '../../types/models';
 
 export default function UserList({ users }: { users: User[] }) {
     return (

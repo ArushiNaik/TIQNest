@@ -5,7 +5,7 @@ import { getCurrentUser } from '../../services/auth';
 import { createEscalationTicket } from '../../services/remediation-service';
 import type { Ticket, TicketCategory } from '../../types/models';
 import type { IssueType, Remedy, TiqFixTicket } from '../../types/remediation';
-import { formatLabel } from '../TicketCard';
+import { formatLabel } from '../tiqradar/TicketCard';
 import { issueOption } from './tiqfix-ui';
 
 const CATEGORIES: TicketCategory[] = ['NETWORK', 'EMAIL', 'VPN', 'PRINTER', 'SOFTWARE', 'HARDWARE', 'ACCOUNT', 'OTHER'];

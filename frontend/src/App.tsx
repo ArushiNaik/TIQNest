@@ -1,15 +1,15 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import HelpDeskNavBar from './NavBar';
-import HomePage from './pages/HomePage';
-import LandingPage from './pages/LandingPage';
-import LoginPage from './pages/LoginPage';
-import TicketPage from './pages/TicketPage';
-import UserPage from './pages/UserPage';
+import HomePage from './pages/home/HomePage';
+import LandingPage from './pages/landing/LandingPage';
+import LoginPage from './pages/login/LoginPage';
+import TicketPage from './pages/tiqradar/TicketPage';
+import UserPage from './pages/users/UserPage';
 import TiqFixPage from './pages/tiqfix/TiqFixPage';
-import TiqVisionPage from './pages/vision/TiqVisionPage';
-import DashboardPage from './pages/ops/DashboardPage';
-import OutageBanner from './pages/ops/OutageBanner';
+import TiqVisionPage from './pages/tiqvision/TiqVisionPage';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import OutageBanner from './pages/tiqradar/OutageBanner';
 import { getCurrentUser, isAdmin } from './services/auth';
 
 function RequireLogin({ children }: { children: ReactElement }) {

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Alert, Button, Container } from 'react-bootstrap';
-import { getData, postData } from '../services/api-services';
-import { API_URL_USERS } from '../services/config';
-import type { User, UserRequest } from '../types/models';
+import { getData, postData } from '../../services/api-services';
+import { API_URL_USERS } from '../../services/config';
+import type { User, UserRequest } from '../../types/models';
 import UserForm from './UserForm';
 import UserList from './UserList';
 

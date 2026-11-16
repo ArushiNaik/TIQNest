@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Alert, Badge, Card, ListGroup, Spinner } from 'react-bootstrap';
 import { getAttempts } from '../../services/remediation-service';
 import type { RemediationAttempt } from '../../types/remediation';
-import { formatDate } from '../TicketCard';
+import { formatDate } from '../tiqradar/TicketCard';
 import { OUTCOME } from './tiqfix-ui';
 
 interface RemediationHistoryProps {

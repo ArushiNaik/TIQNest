@@ -10,12 +10,12 @@ import {
     resolveIncident,
 } from '../../services/ops-service';
 import type { Incident, SlaSummary, Ticket } from '../../types/models';
-import { formatLabel } from '../TicketCard';
+import { formatLabel } from '../tiqradar/TicketCard';
 import DemoOutageButton from './DemoOutageButton';
-import AdminReviewPanel from '../vision/AdminReviewPanel';
+import AdminReviewPanel from '../tiqvision/AdminReviewPanel';
 import SlaBadge from './SlaBadge';
 import TicketDetailsModal from './TicketDetailsModal';
-import './ops.css';
+import './dashboard.css';
 
 const POLL_MS = 15000;
 
