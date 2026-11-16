@@ -12,6 +12,7 @@ import RemediationHistory from './RemediationHistory';
 import { ISSUE_OPTIONS, REMEDY_ICON, issueOption } from './tiqfix-ui';
 import './TiqFix.css';
 import { ClarifyNotice, NonItNotice, SecurityNotice } from '../tiqvision/ScopeNotices';
+import { FeatureIcon } from '../../brand';
 
 function parseTicketId(raw: string | null): number | null | 'invalid' {
     if (raw == null || raw === '') return null;
@@ -141,7 +142,7 @@ export default function TiqFixPage() {
         <Container className="py-4 tiqfix">
             <header className="tiqfix-hero mb-4">
                 <div className="d-flex align-items-center gap-3">
-                    <div className="tiqfix-hero-icon" aria-hidden="true">🛠️</div>
+                    <div className="tiqfix-hero-icon"><FeatureIcon feature="fix" /></div>
                     <div>
                         <h1 className="h2 mb-1 fw-bold">TiqFix — Smart IT Repair</h1>
                         <p className="mb-0 opacity-75">Safe, guided solutions for everyday IT problems.</p>
@@ -235,7 +236,7 @@ export default function TiqFixPage() {
                                         <Form.Control.Feedback type="invalid">{formError}</Form.Control.Feedback>
                                     </Form.Group>
                                     <Button type="submit" className="w-100 mt-3" size="lg" disabled={loading}>
-                                        {loading ? <><Spinner size="sm" animation="border" className="me-2" />Finding a fix…</> : '✨ Try TiqFix'}
+                                        {loading ? <><Spinner size="sm" animation="border" className="me-2" />Finding a fix…</> : 'Try TiqFix'}
                                     </Button>
                                 </Form>
                             </Card.Body>

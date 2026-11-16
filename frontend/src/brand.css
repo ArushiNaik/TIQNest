@@ -1,0 +1,2 @@
+.brand-logo { display: inline-flex; align-items: center; gap: .18em; white-space: nowrap; }
+.brand-mark { color: var(--pink); font-size: .62em; line-height: 1; }

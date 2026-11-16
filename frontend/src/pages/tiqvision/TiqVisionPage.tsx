@@ -14,6 +14,7 @@ import { ClarifyNotice, NonItNotice, SecurityNotice } from './ScopeNotices';
 import ScreenRecorder from './ScreenRecorder';
 import ScreenshotDropzone from './ScreenshotDropzone';
 import TriageResultPanel, { draftFrom, type TicketDraft } from './TriageResultPanel';
+import { FeatureIcon } from '../../brand';
 
 const REMEDY_TO_ISSUE: Record<string, string> = {
     'vpn-settings': 'VPN',
@@ -171,7 +172,7 @@ export default function TiqVisionPage() {
         <Container className="py-4 tiqfix">
             <header className="tiqfix-hero mb-4">
                 <div className="d-flex align-items-center gap-3">
-                    <div className="tiqfix-hero-icon" aria-hidden="true">👁️</div>
+                    <div className="tiqfix-hero-icon"><FeatureIcon feature="vision" /></div>
                     <div>
                         <h1 className="h2 mb-1 fw-bold">TiqVision — Show, Don't Type</h1>
                         <p className="mb-0 opacity-75">Upload an error screenshot. When AI analysis is enabled, get recommended fixes and an automatically prepared ticket to review and submit.</p>
@@ -219,7 +220,7 @@ export default function TiqVisionPage() {
                                 />
                             </Form.Group>
                             <Button className="w-100 mt-3" size="lg" disabled={busy} onClick={() => analyze()}>
-                                {analyzing ? <><Spinner size="sm" animation="border" className="me-2" />Analyzing…</> : '✨ Analyze'}
+                                {analyzing ? <><Spinner size="sm" animation="border" className="me-2" />Analyzing…</> : 'Analyze'}
                             </Button>
                             {status?.demoFixturesEnabled && files.length > 0 && (
                                 <Button variant="link" size="sm" className="w-100 mt-1" disabled={busy} onClick={() => analyze(undefined, 'vpn')}>
@@ -227,7 +228,7 @@ export default function TiqVisionPage() {
                                 </Button>
                             )}
                             <p className="small text-muted mt-3 mb-0">
-                                Tiqnest only handles IT problems. Don't upload screenshots that show passwords or personal data.
+                                TIQNest only handles IT problems. Don't upload screenshots that show passwords or personal data.
                             </p>
                         </Card.Body>
                     </Card>
@@ -290,7 +291,7 @@ export default function TiqVisionPage() {
                                         )}
                                         <div className="d-flex flex-wrap gap-2">
                                             {result.classification === 'IT_SUPPORTED' && result.suggestedRemedyIds.length > 0 && (
-                                                <Button variant="success" onClick={tryTiqFix}>🛠️ Try TiqFix for ticket #{created.id}</Button>
+                                                <Button variant="success" onClick={tryTiqFix}><FeatureIcon feature="fix" className="me-1" />Try TiqFix for ticket #{created.id}</Button>
                                             )}
                                             <Button variant="outline-dark" onClick={() => navigate('/tickets')}>View my tickets</Button>
                                             <Button variant="link" onClick={tryAnotherPrompt}>Analyze another problem</Button>
@@ -313,7 +314,7 @@ export default function TiqVisionPage() {
                                         {submitError && <Alert variant="danger" className="mb-0">{submitError}</Alert>}
                                         <div className="d-flex flex-wrap gap-2">
                                             {step === 'TRY_FIX' && (
-                                                <Button variant="success" size="lg" disabled={submitting} onClick={tryTiqFix}>🛠️ Try TiqFix</Button>
+                                                <Button variant="success" size="lg" disabled={submitting} onClick={tryTiqFix}><FeatureIcon feature="fix" className="me-1" />Try TiqFix</Button>
                                             )}
                                             <Button
                                                 size="lg"

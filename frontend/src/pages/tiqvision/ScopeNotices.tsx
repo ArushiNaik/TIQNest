@@ -34,7 +34,7 @@ export function NonItNotice({ submittedText, onTryAgain }: NonItNoticeProps) {
         <Alert variant="secondary" className="tiqvision-notice shadow-sm" role="status">
             <Alert.Heading className="h5">🧭 This doesn't look like an IT support issue.</Alert.Heading>
             <p className="mb-2">
-                Tiqnest is designed to help with computers, software, network connections, accounts and technical
+                TIQNest is designed to help with computers, software, network connections, accounts and technical
                 problems. Please describe an IT-related issue.
             </p>
             <p className="small text-muted mb-3">No diagnosis was made, no ticket was created and no fix was suggested.</p>

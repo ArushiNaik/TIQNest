@@ -3,6 +3,7 @@ import { postData } from './services/api-services';
 import { clearSession, getCurrentUser, isAdmin } from './services/auth';
 import { API_URL_LOGOUT } from './services/config';
 import './NavBar.css';
+import { Logo } from './brand';
 
 interface NavLinkItem {
     to: string;
@@ -13,7 +14,7 @@ interface NavLinkItem {
 const links: NavLinkItem[] = [
     { to: 'home', title: 'Home', adminOnly: false },
     { to: 'dashboard', title: 'Dashboard', adminOnly: true },
-    { to: 'tickets', title: 'Tickets', adminOnly: false },
+    { to: 'tickets', title: 'TiqRadar', adminOnly: false },
     { to: 'vision', title: 'TiqVision', adminOnly: false },
     { to: 'fix', title: 'TiqFix', adminOnly: false },
     { to: 'users', title: 'Users', adminOnly: true },
@@ -35,7 +36,7 @@ export default function HelpDeskNavBar() {
 
     return (
         <nav className="navbar">
-            <Link to="/home" className="navBrand">TIQNest</Link>
+            <Link to="/home" className="navBrand" aria-label="TIQNest home"><Logo /></Link>
             <div className="navLinks">
                 {visibleLinks.map((link) => (
                     <NavLink key={link.to} to={`/${link.to}`}>

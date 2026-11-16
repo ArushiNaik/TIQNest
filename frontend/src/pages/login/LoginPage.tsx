@@ -5,6 +5,7 @@ import { saveSession } from '../../services/auth';
 import { API_URL_LOGIN } from '../../services/config';
 import type { LoginResponse } from '../../types/models';
 import './LoginPage.css';
+import { Logo } from '../../brand';
 
 export default function LoginPage() {
     const [email, setEmail] = useState('');
@@ -38,7 +39,7 @@ export default function LoginPage() {
         <div className="login-page">
             <div className="login-form">
                 <Link to="/" className="login-back">← Back to homepage</Link><br />
-                <h2>🛠️ TIQNest</h2>
+                <h2><Logo /></h2>
                 <p className="login-subtitle">Sign in to report a problem or check your tickets</p>
                 {error && <div className="error-message">{error}</div>}
                 <form onSubmit={handleSubmit}>

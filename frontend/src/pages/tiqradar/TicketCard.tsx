@@ -2,6 +2,7 @@ import { Badge, Button, Card } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
 import type { Ticket, TicketPriority, TicketStatus } from '../../types/models';
 import SlaBadge from '../dashboard/SlaBadge';
+import { FeatureIcon } from '../../brand';
 
 const statusVariant: Record<TicketStatus, string> = {
     OPEN: 'primary',
@@ -67,7 +68,7 @@ export default function TicketCard({ ticket, onOpen }: { ticket: Ticket; onOpen?
                                 className="btn btn-sm btn-outline-primary text-nowrap"
                                 aria-label={`Try TiqFix for ticket ${ticket.id}`}
                             >
-                                🛠️ Try TiqFix
+                                <FeatureIcon feature="fix" className="me-1" />Try TiqFix
                             </Link>
                         )}
                     </div>
