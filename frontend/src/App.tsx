@@ -3,6 +3,9 @@ import type { ReactElement } from 'react';
 import HelpDeskNavBar from './NavBar';
 import HomePage from './pages/home/HomePage';
 import LandingPage from './pages/landing/LandingPage';
+import AboutPage from './pages/landing/public/AboutPage';
+import FeaturesPage from './pages/landing/public/FeaturesPage';
+import HowItWorksPage from './pages/landing/public/HowItWorksPage';
 import LoginPage from './pages/login/LoginPage';
 import TicketPage from './pages/tiqradar/TicketPage';
 import UserPage from './pages/users/UserPage';
@@ -23,7 +26,7 @@ function RequireAdmin({ children }: { children: ReactElement }) {
 
 function AppContent() {
     const location = useLocation();
-    const isPublicPage = location.pathname === '/' || location.pathname === '/login';
+    const isPublicPage = ['/', '/login', '/features', '/how-it-works', '/about'].includes(location.pathname);
 
     return (
         <div className="App">
@@ -32,6 +35,9 @@ function AppContent() {
 
             <Routes>
                 <Route path="/" element={<LandingPage />} />
+                <Route path="/features" element={<FeaturesPage />} />
+                <Route path="/how-it-works" element={<HowItWorksPage />} />
+                <Route path="/about" element={<AboutPage />} />
                 <Route path="/login" element={<LoginPage />} />
                 <Route path="/home" element={<RequireLogin><HomePage /></RequireLogin>} />
                 <Route path="/tickets" element={<RequireLogin><TicketPage /></RequireLogin>} />
