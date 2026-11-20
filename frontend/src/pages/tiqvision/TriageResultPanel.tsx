@@ -1,7 +1,7 @@
 import { Badge, Card, Col, Form, Row } from 'react-bootstrap';
 import type { TicketCategory, TicketPriority } from '../../types/models';
 import type { ScopeClassification, TriageAnalysis } from '../../types/triage';
-import { formatLabel } from '../TicketCard';
+import { formatLabel } from '../tiqradar/TicketCard';
 
 export const CATEGORIES: TicketCategory[] = ['NETWORK', 'EMAIL', 'VPN', 'PRINTER', 'SOFTWARE', 'HARDWARE', 'ACCOUNT', 'OTHER'];
 const PRIORITIES: TicketPriority[] = ['LOW', 'MEDIUM', 'HIGH', 'CRITICAL'];

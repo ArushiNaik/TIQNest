@@ -465,3 +465,16 @@
 .hero-ticket-dismiss:hover { background: var(--pink); color: var(--ink); }
 .hero-ticket-dismiss:focus-visible { outline: 2px solid var(--pink); outline-offset: 2px; }
 .hero-ticket:hover, .hero-ticket:focus-within { animation-play-state: paused; }
+
+.hero-ticket-live { width: 200px; }
+.hero-ticket-live::before { box-shadow: 199px 0 0 var(--sage); }
+.hero-ticket-live .hero-ticket-title { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; font-size: 1.45rem; color: var(--cream); text-decoration: none; }
+.hero-ticket-live .hero-ticket-title:hover { color: var(--pink); }
+.hero-ticket-live .hero-ticket-meta { margin-top: 4px; }
+.hero-ticket-live .hero-ticket-bar span { animation: none; transition: width .8s var(--ease-out); }
+.hero-ticket-live.is-overdue .hero-ticket-foot { color: var(--pink); }
+@media (max-width: 900px) {
+    .hero-ticket-live { width: 160px; }
+    .hero-ticket-live::before { box-shadow: 159px 0 0 var(--sage); }
+    .hero-ticket-live .hero-ticket-title { font-size: 1.2rem; }
+}

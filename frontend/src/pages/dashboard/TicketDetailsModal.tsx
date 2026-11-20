@@ -5,7 +5,7 @@ import { getCurrentUser, isAdmin } from '../../services/auth';
 import { API_URL_USERS } from '../../services/config';
 import { getTicket, getTicketHistory, notifyOpsChanged, updateTicket } from '../../services/ops-service';
 import type { AuditEvent, Ticket, TicketPriority, TicketStatus, UpdateTicketRequest, User } from '../../types/models';
-import { formatDate, formatLabel } from '../TicketCard';
+import { formatDate, formatLabel } from '../tiqradar/TicketCard';
 import SlaBadge from './SlaBadge';
 import TicketTimeline from './TicketTimeline';
 

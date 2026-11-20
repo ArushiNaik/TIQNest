@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Alert, Button, Form } from 'react-bootstrap';
-import type { CreateTicketRequest, TicketCategory, TicketPriority } from '../types/models';
+import type { CreateTicketRequest, TicketCategory, TicketPriority } from '../../types/models';
 import { formatLabel } from './TicketCard';
 
 const priorities: { value: TicketPriority; label: string }[] = [

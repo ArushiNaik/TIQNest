@@ -1,5 +1,5 @@
 import TicketCard from './TicketCard';
-import type { Ticket, User } from '../types/models';
+import type { Ticket, User } from '../../types/models';
 import './TicketList.css';
 
 interface TicketListProps {

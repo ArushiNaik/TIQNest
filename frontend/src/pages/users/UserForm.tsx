@@ -1,6 +1,6 @@
 import { useState, type ChangeEvent, type FormEvent } from 'react';
 import { Alert, Button, Form } from 'react-bootstrap';
-import type { UserRequest } from '../types/models';
+import type { UserRequest } from '../../types/models';
 
 interface UserFormProps {
     error: string | null;

@@ -1,5 +1,5 @@
 import type { AuditAction, AuditEvent } from '../../types/models';
-import './ops.css';
+import './dashboard.css';
 
 const icon: Record<AuditAction, string> = {
     CREATED: '📝',
